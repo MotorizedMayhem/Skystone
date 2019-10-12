@@ -25,14 +25,34 @@ public class MM_TensorFlow {
 
     public void init(HardwareMap hardwareMap, double min_confidence, MM_Vuforia.SHOW_CAMERA show_camera)
     {
-        generalInit(hardwareMap, min_confidence, show_camera);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        if (!ClassFactory.getInstance().canCreateTFObjectDetector()){
+            int killMe = 1/0; //this will throw an exception
+        }
+
+        TFObjectDetector.Parameters tfodParameters;
+        if (show_camera == MM_Vuforia.SHOW_CAMERA.USE_SCREEN) {
+            int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                    "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        }
+        else{
+            tfodParameters = new TFObjectDetector.Parameters();
+        }
+
+        tfodParameters.minimumConfidence = min_confidence;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+        tfod.activate();
     }
-    public void init(HardwareMap hardwareMap, double min_confidence) //if you don't say, you don't get it
-    { 
-        //check if below works
-        //this(hardwareMap, min_confidence, MM_Vuforia.SHOW_CAMERA.NO_USE_SCREEN)
-        generalInit(hardwareMap,min_confidence, MM_Vuforia.SHOW_CAMERA.NO_USE_SCREEN);
-    }
+
 
     public List<Recognition> findBricks()
     {
@@ -62,37 +82,4 @@ public class MM_TensorFlow {
         tfod.shutdown();
     }
 
-
-
-
-
-
-    private void generalInit(HardwareMap hardwareMap, double min_confidence, MM_Vuforia.SHOW_CAMERA show_camera){
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        if (!ClassFactory.getInstance().canCreateTFObjectDetector()){
-            int killMe = 1/0; //this will throw an exception
-        }
-
-        TFObjectDetector.Parameters tfodParameters;
-        if (show_camera == MM_Vuforia.SHOW_CAMERA.USE_SCREEN) {
-            int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                    "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-            tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        }
-        else{
-            tfodParameters = new TFObjectDetector.Parameters();
-        }
-
-        tfodParameters.minimumConfidence = min_confidence;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
-
-    }
 }
