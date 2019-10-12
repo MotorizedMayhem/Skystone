@@ -36,11 +36,19 @@ public class MM_OpenCV {
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
     }
 
-    Mat getFrames() throws InterruptedException {
+    Mat getFrames(){
         Image rgb = null;
-        VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
+        VuforiaLocalizer.CloseableFrame frame;
+        try {
+            frame = vuforia.getFrameQueue().take();
+        }
+        catch (InterruptedException e){
+            return null;
+            //frame = null;
+        }
         long numImages = frame.getNumImages();
         for (int i = 0; i < numImages; i++) {
             if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
