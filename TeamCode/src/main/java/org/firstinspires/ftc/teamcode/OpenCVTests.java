@@ -43,10 +43,13 @@ import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
+import org.opencv.core.CvException;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
@@ -70,8 +73,11 @@ public class OpenCVTests extends LinearOpMode {
 
       //  Instantiate the Vuforia engine
       vuforia = ClassFactory.getInstance().createVuforia(parameters);
+      boolean inited = OpenCVLoader.initDebug();
       telemetry.addData("vuforia status", vuforia.toString());
+      telemetry.addData("openCV status", inited);
       telemetry.update();
+
 
       waitForStart();
       telemetry.addData("Status", "started");
@@ -112,6 +118,7 @@ public class OpenCVTests extends LinearOpMode {
       }
       telemetry.addData("frameFormat0", frame.getImage(0).getFormat()  ); //grayscale
       telemetry.addData("frameFormat1", frame.getImage(1).getFormat()  ); //RGB565 //TODO add catch
+      telemetry.addData("rgbFormat", rgb.getFormat());
       telemetry.update();
       sleep(5000);
       //TODO FIND A WAY TO CHOP OFF THE TOP HALF
@@ -125,17 +132,18 @@ public class OpenCVTests extends LinearOpMode {
 
       // construct an OpenCV mat from the bitmap using Utils.bitmapToMat()
       //Mat mat = new Mat(bm.getWidth(), bm.getHeight(), CvType.CV_8UC3);
-      Mat mat = new Mat();
+
+      Mat img = new Mat(rgb.getWidth(), rgb.getHeight(), CvType.CV_8UC4);
       telemetry.addData("mat", "created unsimilar mat"); //RGB565
       telemetry.update();
       sleep(5000);
-      Utils.bitmapToMat(bm, mat);
+      Utils.bitmapToMat(bm, img);
       telemetry.addData("mat", "bitmap converted to mat"); //RGB565
       telemetry.update();
       sleep(5000);
 
       // convert to grayscale before returning
-      Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY);
+      Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2GRAY);
       telemetry.addData("mat", "mat converted to grayscale"); //RGB565
       telemetry.update();
       sleep(5000);
@@ -151,17 +159,34 @@ public class OpenCVTests extends LinearOpMode {
 
 
       telemetry.addData("Status", "frames");
+      telemetry.addData("img", img.toString());
       telemetry.update();
-      sleep(2000);
-      //Mat threshed = MM_OpenCV.Threshold(frame, 205);
+      sleep(5000);
+      Mat threshed = MM_OpenCV.Threshold(img, 205).clone();
       telemetry.addData("Status", "threshed");
       telemetry.update();
-      //Mat morphed = MM_OpenCV.Morphology(threshed);
+      sleep(5000);
+      Mat morphed = MM_OpenCV.Morphology(threshed);
       telemetry.addData("Status", "morphed");
       telemetry.update();
-      //List<MatOfPoint> contours = MM_OpenCV.findContours(morphed);
+      sleep(5000);
+      List<MatOfPoint> contours = MM_OpenCV.findContours(morphed);
       telemetry.addData("Really?", "contoured");
       telemetry.update();
+
+      Mat printImg =  img.clone();
+      Imgproc.drawContours(printImg, contours,-1, new Scalar(0,0,255));
+
+
+      Bitmap bmp = null;
+      Mat tmp = new Mat (printImg.height(), printImg.width(), CvType.CV_8U, new Scalar(4));
+      try {
+          Imgproc.cvtColor(printImg, tmp, Imgproc.COLOR_GRAY2RGBA, 4);
+          bmp = Bitmap.createBitmap(tmp.cols(), tmp.rows(), Bitmap.Config.ARGB_8888);
+          Utils.matToBitmap(tmp, bmp);
+      }
+      catch (CvException e){idle();} //TODO ADD LOG
+
       while (opModeIsActive()){
           idle();
       }

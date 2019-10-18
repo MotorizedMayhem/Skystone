@@ -9,12 +9,15 @@ import com.vuforia.PIXEL_FORMAT;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MM_OpenCV {
@@ -27,7 +30,7 @@ public class MM_OpenCV {
 
     }
 
-    void init() //temp until we decide if we want a webcam
+    boolean init() //temp until we decide if we want a webcam
     {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
@@ -36,6 +39,7 @@ public class MM_OpenCV {
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        return OpenCVLoader.initDebug();
 
     }
 
@@ -90,11 +94,12 @@ public class MM_OpenCV {
     }
 
     static List<MatOfPoint> findContours(Mat img){
-        List<MatOfPoint> output = null;
+        List<MatOfPoint> output = new ArrayList<>();
+        Mat hierarchy = new Mat();
         int mode = Imgproc.RETR_LIST;
         int method = Imgproc.CHAIN_APPROX_SIMPLE;
         org.opencv.core.Point offset = new org.opencv.core.Point(-1,-1);
-        Imgproc.findContours(img, output,null, mode, method,offset);
+        Imgproc.findContours(img, output,hierarchy, mode, method,offset);
         return output;
     }
 
