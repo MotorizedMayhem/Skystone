@@ -55,6 +55,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupMenu;
@@ -662,6 +663,13 @@ public class FtcRobotControllerActivity extends Activity
     }
     monitorContainer.requestLayout();
   }
+
+  //TODO custom added to work OpenCV
+  public ImageView getBitmapDisplay(){
+    return (ImageView) findViewById(R.id.bitmapDisplayId);
+  }
+
+
 
   @Override
   protected void onActivityResult(int request, int result, Intent intent) {

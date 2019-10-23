@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -8,9 +9,9 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
 @TeleOp(name="MatTest", group="Computer Vision")
+@Disabled
 public class MatTest extends LinearOpMode {
     boolean useless = OpenCVLoader.initDebug();
-
     @Override
     public void runOpMode() {
         // run until the end of the match (driver presses STOP)
