@@ -38,10 +38,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.vuforia.CameraDevice;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
-import com.vuforia.State;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
@@ -53,27 +51,32 @@ import org.opencv.core.CvException;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.Arrays;
 import java.util.List;
 
 
 @TeleOp(name = "OpenCV Test", group = "Computer Vision")
 public class OpenCVTests extends LinearOpMode {
-    VuforiaLocalizer vuforia;
-    String VUFORIA_KEY =
+    private VuforiaLocalizer vuforia;
+    private String VUFORIA_KEY =
             "Adxgm9L/////AAABmf4X4r11gU5QjdS+o++UzoZdYE8ZWx5AnTVVr3lhgbm7NXTbtSGDU2CeUqRgcliLekQqIQtK4SCFCGmTrC9fu/fN0Mlnl1ul2djmLaT+4y7bxti+F9IMOFl2bh9yO3qeny+yyv1/uzupVJM522Jt8kEjMl6wklFQCKjow+pCDDvKQ8/HiA/HjIV4qIcc/sqnIJys6BWUt6Oj5c1NuJIIU6L7A8dkYh29xC1DHAt9jnIRefQHr7wo/OjfvqvL6x2VFkh2/o7z600lMwWjRv+X6oQ3df8JvFn3DOaOiw1Qs6pnLo4DcSZrQY0F9Y/RjM4/u+BrtF53QTw188j6t0PTrsh5hWwuUDLnp1WLA0zFZNs/";
 
     private VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 ;
 
   @Override
-  public void runOpMode() throws InterruptedException {
+  public void runOpMode(){
       final FtcRobotControllerActivity act = (FtcRobotControllerActivity) hardwareMap.appContext;
       int cameraMonitorViewId = act.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-      //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-      VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+      VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+      //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
       parameters.vuforiaLicenseKey = VUFORIA_KEY;
       parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
@@ -89,7 +92,7 @@ public class OpenCVTests extends LinearOpMode {
       waitForStart();
       telemetry.addData("Status", "started");
       telemetry.update();
-      vuforia.setFrameQueueCapacity(3); //was 2
+      vuforia.setFrameQueueCapacity(2); //was 2
       vuforia.enableConvertFrameToBitmap();
       Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true);
 
@@ -106,13 +109,24 @@ public class OpenCVTests extends LinearOpMode {
           sleep(5000);
           frame = null;
       }
+      while (frame.getNumImages() == 1 && opModeIsActive()){
+          try {
+              frame = vuforia.getFrameQueue().take();
+          }
+          catch (InterruptedException e){
+              telemetry.addData("exception", "interrupted at getting frame");
+              telemetry.update();
+              sleep(5000);
+              frame = null;
+          }
+      }
       telemetry.addData("frameClass", frame.getClass());
       telemetry.update();
 
       long numImages = frame.getNumImages();
       telemetry.addData("images", numImages);
       telemetry.update();
-      sleep(500);
+      //sleep(500);
 
 
       //convertFrameToBitmap
@@ -127,7 +141,7 @@ public class OpenCVTests extends LinearOpMode {
       //telemetry.addData("frameFormat1", frame.getImage(1).getFormat()  ); //RGB565 //TODO add catch
       telemetry.addData("rgbFormat", rgb.getFormat());
       telemetry.update();
-      sleep(500);
+      //sleep(500);
       //TODO FIND A WAY TO CHOP OFF THE TOP HALF
 
       Bitmap bm = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
@@ -135,7 +149,7 @@ public class OpenCVTests extends LinearOpMode {
 
       telemetry.addData("bitmap", "pixels copied from image"); //RGB565
       telemetry.update();
-      sleep(500);
+      //sleep(500);
 
       // construct an OpenCV mat from the bitmap using Utils.bitmapToMat()
       //Mat mat = new Mat(bm.getWidth(), bm.getHeight(), CvType.CV_8UC3);
@@ -143,18 +157,26 @@ public class OpenCVTests extends LinearOpMode {
       Mat img = new Mat(rgb.getWidth(), rgb.getHeight(), CvType.CV_8UC3); //TODO was changed
       telemetry.addData("mat", "created similar mat"); //RGB565
       telemetry.update();
-      sleep(500);
+      //sleep(500);
       Utils.bitmapToMat(bm, img);
       telemetry.addData("mat", "bitmap converted to mat"); //RGB565
       telemetry.update();
-      sleep(500);
+      //sleep(500);
 
-      Mat colorImg = img.clone();
+      //chop off top third
+      //Mat newImg = img.submat(img.height()/3, img.height(), img.width(),img.width());
+      Rect roi = new Rect(new Point(0,300), new Point(img.width(),img.height()));
+      Mat newImg = img.submat(roi);
+
+      Mat colorImg = newImg.clone(); //was img
+      telemetry.addData("newImg", newImg);
+      telemetry.update();
+
       // convert to grayscale before returning
-      Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2GRAY);
+      Imgproc.cvtColor(newImg, newImg, Imgproc.COLOR_RGB2GRAY);
       telemetry.addData("mat", "mat converted to grayscale"); //RGB565
       telemetry.update();
-      sleep(500);
+      //sleep(500);
 
       frame.close();
 
@@ -167,25 +189,60 @@ public class OpenCVTests extends LinearOpMode {
 
 
       telemetry.addData("Status", "frames");
-      telemetry.addData("img", img.toString());
+      telemetry.addData("img", newImg.toString());
       telemetry.update();
-      sleep(500);
-      Mat threshed = MM_OpenCV.Threshold(img, 75).clone();
+      //sleep(500);
+      
+
+      
+      Mat threshed = MM_OpenCV.Threshold(newImg, 30).clone(); //was 75
       telemetry.addData("Status", "threshed");
       telemetry.update();
-      sleep(500);
+      //sleep(500);
+
       Mat morphed = MM_OpenCV.Morphology(threshed);
       telemetry.addData("Status", "morphed");
       telemetry.update();
-      sleep(500);
+      //sleep(500);
+
       List<MatOfPoint> contours = MM_OpenCV.findContours(morphed);
       telemetry.addData("Status", "contoured");
       telemetry.addData("contour length", contours.size());
       telemetry.update();
-      sleep(500);
+      //sleep(500);
 
-      Imgproc.drawContours(colorImg, contours,-1, new Scalar(50,100,255), -1);
 
+      double[] areas = new double[contours.size()];
+      for (int i = 0; i<contours.size(); i++) {
+          areas[i] = Imgproc.contourArea(contours.get(i));
+      }
+      double max = areas[0];
+      int max_index = 0;
+      for (int i = 0; i < areas.length; i++)
+      {
+          if (max < areas[i])
+          {
+              max = areas[i];
+              max_index = i;
+          }
+      }
+
+      Imgproc.drawContours(colorImg, contours,-1, new Scalar(140, 235, 52), -1); //bright green
+      MatOfPoint[] largestArray = new MatOfPoint[]{contours.get(max_index)};
+      List<MatOfPoint> largestList = Arrays.asList(largestArray);
+      Imgproc.drawContours(colorImg, largestList, -1, new Scalar(0,255,255), -1); //bright blue
+
+      RotatedRect rect = null;
+      try {
+           rect = Imgproc.minAreaRect(new MatOfPoint2f((contours.get(max_index)).toArray()));
+      }
+      catch (Exception e){
+          telemetry.addData("exception", e);
+          telemetry.update();
+      }
+      //telemetry.addData("center", rect.center.toString());
+
+      Imgproc.circle(colorImg,rect.center,10,new Scalar(255,0,0),-1); //draw center of rect
 
       Bitmap bmp = null;
       try {
@@ -218,6 +275,7 @@ public class OpenCVTests extends LinearOpMode {
       });
 
       telemetry.addData("Status", "reached end");
+      telemetry.addData("center", rect.center.toString());
       telemetry.update();
       while (opModeIsActive()){
 
