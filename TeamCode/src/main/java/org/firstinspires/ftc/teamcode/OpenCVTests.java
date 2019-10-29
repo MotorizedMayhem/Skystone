@@ -44,6 +44,7 @@ import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -69,7 +70,7 @@ public class OpenCVTests extends LinearOpMode {
             "Adxgm9L/////AAABmf4X4r11gU5QjdS+o++UzoZdYE8ZWx5AnTVVr3lhgbm7NXTbtSGDU2CeUqRgcliLekQqIQtK4SCFCGmTrC9fu/fN0Mlnl1ul2djmLaT+4y7bxti+F9IMOFl2bh9yO3qeny+yyv1/uzupVJM522Jt8kEjMl6wklFQCKjow+pCDDvKQ8/HiA/HjIV4qIcc/sqnIJys6BWUt6Oj5c1NuJIIU6L7A8dkYh29xC1DHAt9jnIRefQHr7wo/OjfvqvL6x2VFkh2/o7z600lMwWjRv+X6oQ3df8JvFn3DOaOiw1Qs6pnLo4DcSZrQY0F9Y/RjM4/u+BrtF53QTw188j6t0PTrsh5hWwuUDLnp1WLA0zFZNs/";
 
     private VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-;
+    private WebcamName webcamName;
 
   @Override
   public void runOpMode(){
@@ -80,6 +81,9 @@ public class OpenCVTests extends LinearOpMode {
 
       parameters.vuforiaLicenseKey = VUFORIA_KEY;
       parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+
+      //webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+      //parameters.cameraName = webcamName;
 
       //  Instantiate the Vuforia engine
       vuforia = ClassFactory.getInstance().createVuforia(parameters);
