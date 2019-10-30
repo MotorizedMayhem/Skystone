@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="Linefollow", group="Iterative Opmode")
-//@Disabled
+@Disabled
 public class LineFollower extends OpMode
 {
     // Declare OpMode members.

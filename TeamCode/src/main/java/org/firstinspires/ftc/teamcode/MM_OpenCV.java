@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Bitmap;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import android.graphics.Matrix;
+import android.view.View;
+import android.widget.ImageView;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
@@ -11,11 +11,11 @@ import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
+import org.opencv.core.CvException;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -35,7 +35,7 @@ class MM_OpenCV {
     private static final String VUFORIA_KEY =
             "Adxgm9L/////AAABmf4X4r11gU5QjdS+o++UzoZdYE8ZWx5AnTVVr3lhgbm7NXTbtSGDU2CeUqRgcliLekQqIQtK4SCFCGmTrC9fu/fN0Mlnl1ul2djmLaT+4y7bxti+F9IMOFl2bh9yO3qeny+yyv1/uzupVJM522Jt8kEjMl6wklFQCKjow+pCDDvKQ8/HiA/HjIV4qIcc/sqnIJys6BWUt6Oj5c1NuJIIU6L7A8dkYh29xC1DHAt9jnIRefQHr7wo/OjfvqvL6x2VFkh2/o7z600lMwWjRv+X6oQ3df8JvFn3DOaOiw1Qs6pnLo4DcSZrQY0F9Y/RjM4/u+BrtF53QTw188j6t0PTrsh5hWwuUDLnp1WLA0zFZNs/";
 
-    FtcRobotControllerActivity activity;// = (FtcRobotControllerActivity) hardwareMap.appContext;
+    private FtcRobotControllerActivity activity = null;// = (FtcRobotControllerActivity) hardwareMap.appContext;
 
     //private VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
     //private WebcamName webcamName;
@@ -47,7 +47,7 @@ class MM_OpenCV {
     boolean init(HardwareMap hardwareMap) //temp until we decide if we want a webcam
     {
         activity = (FtcRobotControllerActivity) hardwareMap.appContext;
-        // int cameraMonitorViewId = activity.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        //int cameraMonitorViewId = activity.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
@@ -75,7 +75,10 @@ class MM_OpenCV {
         return OpenCVLoader.initDebug();
     }
 
-    Mat getFrames(){ //think about inputing opmode as using this
+    Mat getFrames(){ //think about imputing opmode as using this
+        /*
+        returns Mat FullColorImage
+         */
         Image rgb = null;
         VuforiaLocalizer.CloseableFrame frame;
         try { //get frames
@@ -86,7 +89,7 @@ class MM_OpenCV {
             //frame = null;
         }
         //check until 2 are returned
-        while (frame.getNumImages() == 1){ //HIGH CAPACITY TO GET STUCK HERE
+        while (frame==null || frame.getNumImages() == 1){ //HIGH CAPACITY TO GET STUCK HERE
             try {
                 frame = vuforia.getFrameQueue().take();
             }
@@ -103,9 +106,8 @@ class MM_OpenCV {
                 break;
             }
         }
-        if (rgb == null){return null;} //shouldnt happen
+        if (rgb == null){return null;} //shouldn't happen
 
-        //TODO FIND A WAY TO CHOP OFF THE TOP HALF
         //copy from frame to bitmap
         Bitmap bm = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
         bm.copyPixelsFromBuffer(rgb.getPixels());
@@ -146,6 +148,12 @@ class MM_OpenCV {
         return Threshold(img, 75);
     }
 
+    static Mat ProcessImg(Mat colorImg, int threshold){
+        Mat toBeProcessed = colorImg.clone();
+        return Morphology(Threshold(CropMat(toBeProcessed), threshold));
+    }
+
+
     static List<MatOfPoint> findContours(Mat img){
         List<MatOfPoint> output = new ArrayList<>();
         Mat hierarchy = new Mat();
@@ -156,7 +164,7 @@ class MM_OpenCV {
         return output;
     }
 
-    static int findLargestContourIndex(List<MatOfPoint> contours){
+    private static int findLargestContourIndex(List<MatOfPoint> contours){
         double[] areas = new double[contours.size()];
         for (int i = 0; i<contours.size(); i++) {
             areas[i] = Imgproc.contourArea(contours.get(i));
@@ -173,6 +181,24 @@ class MM_OpenCV {
         }
         return max_index;
     }
+
+    static Point findCenterOfLargest(List<MatOfPoint> contours, int max_index){
+        RotatedRect rect = null;
+        try {
+            rect = Imgproc.minAreaRect(new MatOfPoint2f((contours.get(max_index)).toArray()));
+        }
+        catch (Exception e){
+            return null;
+        }
+        return rect.center;
+    }
+
+    static Point findCenterOfLargest(List<MatOfPoint> contours){
+        return findCenterOfLargest(contours, findLargestContourIndex(contours));
+    }
+
+
+
     static Mat DISPLAY(Mat colorImg, List<MatOfPoint> contours){
         Imgproc.drawContours(colorImg, contours,-1, new Scalar(140, 235, 52), -1); //bright green
         int max_index = findLargestContourIndex(contours);
@@ -180,18 +206,42 @@ class MM_OpenCV {
         List<MatOfPoint> largestList = Arrays.asList(largestArray);
         Imgproc.drawContours(colorImg, largestList, -1, new Scalar(0,255,255), -1); //bright blue
 
-        RotatedRect rect = null;
-        try {
-            rect = Imgproc.minAreaRect(new MatOfPoint2f((contours.get(max_index)).toArray()));
-        }
-        catch (Exception e){ }
+        Point center = findCenterOfLargest(contours, max_index);
+        if (center==null){center = new Point(0,0);}
         //telemetry.addData("center", rect.center.toString());
 
-        Imgproc.circle(colorImg,rect.center,10,new Scalar(255,0,0),-1); //draw center of rect
+        Imgproc.circle(colorImg,center,10,new Scalar(255,0,0),-1); //draw center of rect
 
 
         return colorImg;
     }
+    static void printToDisplay(Mat colorImg, HardwareMap hardwareMap){
+        final FtcRobotControllerActivity act = (FtcRobotControllerActivity) hardwareMap.appContext;
+        Bitmap bmp = null;
+        try {
+            //Imgproc.cvtColor(printImg, tmp, Imgproc.COLOR_GRAY2RGBA, 4);
+
+            bmp = Bitmap.createBitmap(colorImg.cols(), colorImg.rows(), Bitmap.Config.RGB_565); //RGB_565
+            Utils.matToBitmap(colorImg, bmp);
+        }
+        catch (CvException e){ } //TODO ADD LOG
 
 
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        final Bitmap bmpFinal =  Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
+
+
+        //final Bitmap bmpFinal = bmp;
+
+
+        act.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ImageView bitmapHolder = act.getBitmapDisplay();
+                //bitmapHolder.setVisibility(View.VISIBLE);
+                bitmapHolder.setImageBitmap(bmpFinal);
+            }
+        });
+    }
 }

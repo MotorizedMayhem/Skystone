@@ -25,28 +25,15 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
-public class MM_Vuforia {
+class MM_Vuforia {
     // IMPORTANT:  For Phone Camera, set 1) the camera source and 2) the orientation, based on how your phone is mounted:
     // 1) Camera Source.  Valid choices are:  BACK (behind screen) or FRONT (selfie side)
     // 2) Phone Orientation. Choices are: PHONE_IS_PORTRAIT = true (portrait) or PHONE_IS_PORTRAIT = false (landscape)
-    //
-    // NOTE: If you are running on a CONTROL HUB, with only one USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
-    //
-    private VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+
+    private VuforiaLocalizer.CameraDirection CAMERA_CHOICE; //defaults to back
     private static final boolean PHONE_IS_PORTRAIT = false  ;
 
-    /*
-     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
-     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
-     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
-     * web site at https://developer.vuforia.com/license-manager.
-     *
-     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
-     * random data. As an example, here is a example of a fragment of a valid key:
-     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
-     * Once you've obtained a license key, copy the string from the Vuforia web site
-     * and paste it in to your code on the next line, between the double quotes.
-     */
+
     private static final String VUFORIA_KEY =
             "Adxgm9L/////AAABmf4X4r11gU5QjdS+o++UzoZdYE8ZWx5AnTVVr3lhgbm7NXTbtSGDU2CeUqRgcliLekQqIQtK4SCFCGmTrC9fu/fN0Mlnl1ul2djmLaT+4y7bxti+F9IMOFl2bh9yO3qeny+yyv1/uzupVJM522Jt8kEjMl6wklFQCKjow+pCDDvKQ8/HiA/HjIV4qIcc/sqnIJys6BWUt6Oj5c1NuJIIU6L7A8dkYh29xC1DHAt9jnIRefQHr7wo/OjfvqvL6x2VFkh2/o7z600lMwWjRv+X6oQ3df8JvFn3DOaOiw1Qs6pnLo4DcSZrQY0F9Y/RjM4/u+BrtF53QTw188j6t0PTrsh5hWwuUDLnp1WLA0zFZNs/";
 
@@ -71,7 +58,7 @@ public class MM_Vuforia {
 
     // Class Members
     private OpenGLMatrix lastLocation = null;
-    private VuforiaLocalizer vuforia = null;
+    VuforiaLocalizer vuforia = null;
     private boolean targetVisible = false;
     private float phoneXRotate    = 0;
     private float phoneYRotate    = 0;
@@ -79,19 +66,22 @@ public class MM_Vuforia {
 
     //so we can access these across functions
     private VuforiaTrackables targetsSkyStone;
-    List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+    private List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
 
 
-    public MM_Vuforia(VuforiaLocalizer.CameraDirection camera_pick){
+    MM_Vuforia(VuforiaLocalizer.CameraDirection camera_pick){
         this.CAMERA_CHOICE = camera_pick;
     }
-    public MM_Vuforia(){
+    MM_Vuforia(){
+        this(BACK);
     }
-    public enum SHOW_CAMERA{
+
+
+    enum SHOW_CAMERA{
         USE_SCREEN,
         NO_USE_SCREEN
     }
-    public void init(HardwareMap hardwareMap, SHOW_CAMERA showScreen){
+    void init(HardwareMap hardwareMap, SHOW_CAMERA showScreen){
         VuforiaLocalizer.Parameters parameters;
         if (showScreen == SHOW_CAMERA.USE_SCREEN)
         {
@@ -264,7 +254,7 @@ public class MM_Vuforia {
         // Tap the preview window to receive a fresh image.
 
     }
-    public Pair<OpenGLMatrix,String> scanTargets(){ //returns null if none seen, otherwise returns location matrix
+    Pair<OpenGLMatrix,String> scanTargets(){ //returns null if none seen, otherwise returns location matrix
         String targetName;
         for (VuforiaTrackable trackable : allTrackables) {
             if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
@@ -281,7 +271,7 @@ public class MM_Vuforia {
         return new Pair<>(null,null);
     }
 
-    public static float[] getXYZ(OpenGLMatrix pose, DistanceUnit unit){ //returns position in mm
+    static float[] getXYZ(OpenGLMatrix pose, DistanceUnit unit){ //returns position in mm
         VectorF translation = pose.getTranslation();
         float[] ans = new float[]{translation.get(0), translation.get(1), translation.get(2)};
         if (unit == DistanceUnit.INCH){
@@ -291,7 +281,7 @@ public class MM_Vuforia {
         }
         return ans;
     }
-    public static float[] getPitchRollYaw(OpenGLMatrix pose, AngleUnit unit){
+    static float[] getPitchRollYaw(OpenGLMatrix pose, AngleUnit unit){
         Orientation rot = Orientation.getOrientation(pose,  EXTRINSIC, XYZ, unit);
         float [] ans = new float[]{rot.firstAngle, rot.secondAngle, rot.thirdAngle};
         return ans;

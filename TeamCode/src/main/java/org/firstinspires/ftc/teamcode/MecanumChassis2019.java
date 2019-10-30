@@ -19,30 +19,30 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class MecanumChassis2019 {
+class MecanumChassis2019 {
     private final static int LED_PERIOD = 1;
 
     //Rate limit gamepad button presses to every 500ms
     private final static int GAMEPAD_LOCKOUT = 500;
 
-    public DcMotor flDrive;
-    public DcMotor frDrive;
-    public DcMotor blDrive;
-    public DcMotor brDrive;
+    DcMotor flDrive;
+    DcMotor frDrive;
+    DcMotor blDrive;
+    DcMotor brDrive;
 
     //Dual Imu
-    public BNO055IMU imuBase;
-    public BNO055IMU imuTurn;
+    BNO055IMU imuBase;
+    BNO055IMU imuTurn;
     // State used for updating telemetry
     private Orientation angles;
     private Acceleration gravity;
 
     //Used for touch Sensor
-    public DigitalChannel digitalTouch;
+    DigitalChannel digitalTouch;
 
     //Used for Color Sensor
-    public NormalizedColorSensor colorLeft;
-    public NormalizedColorSensor colorRight;
+    NormalizedColorSensor colorLeft;
+    NormalizedColorSensor colorRight;
 
     //Light Strip
     RevBlinkinLedDriver blinkinLedDriver;
@@ -50,10 +50,10 @@ public class MecanumChassis2019 {
 
     private HardwareMap hardwareMap;
 
-    public MecanumChassis2019() { }
+    MecanumChassis2019() { }
 
 
-    public void init(HardwareMap hwMap){
+    void init(HardwareMap hwMap){
         hardwareMap = hwMap;
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -90,31 +90,34 @@ public class MecanumChassis2019 {
     }
 
 
-    public void motor_powers(double fl, double fr, double bl, double br){
+    void motor_powers(double power){
+        motor_powers(power,power,power,power);
+    }
+    void motor_powers(double fl, double fr, double bl, double br){
         flDrive.setPower(fl);
         frDrive.setPower(fr);
         blDrive.setPower(bl);
         brDrive.setPower(br);
     }
-    public void stop_motors(){
+    void stop_motors(){
         flDrive.setPower(0);
         frDrive.setPower(0);
         blDrive.setPower(0);
         brDrive.setPower(0);
     }
 
-    public double[] getColorLeft() //returns in rgba
+    double[] getColorLeft() //returns in rgba
     {
         NormalizedRGBA colors = colorLeft.getNormalizedColors();
         return new double[]{colors.red,colors.green,colors.blue,colors.alpha};
     }
-    public double[] getColorRight() //returns in rgba
+    double[] getColorRight() //returns in rgba
     {
         NormalizedRGBA colors = colorRight.getNormalizedColors();
         return new double[]{colors.red,colors.green,colors.blue,colors.alpha};
     }
 
-    public double[] getColorLeftHSV() //returns in rgba
+    double[] getColorLeftHSV() //returns in rgba
     {
         float[] hsvValues = new float[3];
         NormalizedRGBA colors = colorLeft.getNormalizedColors();
@@ -122,7 +125,7 @@ public class MecanumChassis2019 {
         return new double[]{hsvValues[0],hsvValues[1],hsvValues[2]};
     }
     
-    public double[] getColorRightHSV() //returns in rgba
+    double[] getColorRightHSV() //returns in rgba
     {
         float[] hsvValues = new float[3];
         NormalizedRGBA colors = colorRight.getNormalizedColors();
@@ -130,11 +133,11 @@ public class MecanumChassis2019 {
         return new double[]{hsvValues[0],hsvValues[1],hsvValues[2]};
     }
 
-    public void setLights(RevBlinkinLedDriver.BlinkinPattern pattern){
+    void setLights(RevBlinkinLedDriver.BlinkinPattern pattern){
         blinkinLedDriver.setPattern(pattern);
     }
 
-    public Orientation getIMU_ZYX(AngleUnit unit){
+    Orientation getIMU_ZYX(AngleUnit unit){
         Orientation angles = imuBase.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, unit);
         return angles;
     }
