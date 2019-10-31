@@ -11,6 +11,7 @@ import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import org.opencv.android.OpenCVLoader;
@@ -47,12 +48,14 @@ class MM_OpenCV {
     boolean init(HardwareMap hardwareMap) //temp until we decide if we want a webcam
     {
         activity = (FtcRobotControllerActivity) hardwareMap.appContext;
-        //int cameraMonitorViewId = activity.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        int cameraMonitorViewId = activity.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        WebcamName cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        //parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        parameters.cameraName = cameraName;
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -119,7 +122,7 @@ class MM_OpenCV {
 
     }
     static Mat CropMat(Mat in){
-        Rect roi = new Rect(new Point(0,300), new Point(in.width(),in.height()));
+        Rect roi = new Rect(new Point(0,300), new Point(in.width() -400,in.height()));
         Mat out = in.submat(roi);
         return out;
     }
@@ -128,7 +131,7 @@ class MM_OpenCV {
         Mat output = new Mat(img.size(), img.type()); //creates output like input
         int operation = Imgproc.MORPH_CLOSE; // dilation followed by erosion
         int kernelShape = Imgproc.CV_SHAPE_RECT;
-        org.opencv.core.Size kernelSize = new org.opencv.core.Size(5,5); // will require tuning
+        org.opencv.core.Size kernelSize = new org.opencv.core.Size(7,7); // will require tuning
         Mat KERNEL = Imgproc.getStructuringElement(kernelShape, kernelSize);
         org.opencv.core.Point originPt = new org.opencv.core.Point(-1,-1); //gives middle of the image
         Imgproc.morphologyEx(img, output,operation,KERNEL, originPt , 1);
