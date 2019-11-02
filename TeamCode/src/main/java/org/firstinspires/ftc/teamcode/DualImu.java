@@ -27,6 +27,7 @@ import java.util.Locale;
  * @see <a href="http://www.adafruit.com/products/2472">Adafruit IMU</a>
  */
 @TeleOp(name = "Dual Imu Readouts", group = "Sensor")
+@Disabled
 public class DualImu extends LinearOpMode
     {
     //----------------------------------------------------------------------------------------------

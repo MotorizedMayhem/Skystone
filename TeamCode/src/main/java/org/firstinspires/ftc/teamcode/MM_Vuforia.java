@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.hardware.camera2.CameraDevice;
 import android.util.Pair;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -32,6 +33,7 @@ class MM_Vuforia {
 
     private VuforiaLocalizer.CameraDirection CAMERA_CHOICE; //defaults to back
     private static final boolean PHONE_IS_PORTRAIT = false  ;
+    private static final String webcamName = "Webcam 1";
 
 
     private static final String VUFORIA_KEY =
@@ -77,26 +79,44 @@ class MM_Vuforia {
     }
 
 
-    enum SHOW_CAMERA{
+    /*
+    enum  SHOW_CAMERA{
         USE_SCREEN,
         NO_USE_SCREEN
     }
-    void init(HardwareMap hardwareMap, SHOW_CAMERA showScreen){
+    */
+    final static boolean
+        USE_SCREEN = true,
+        NO_USE_SCREEN = false,
+        USE_WEBCAM = true,
+        USE_PHONECAM = false;
+    Pair<VuforiaLocalizer, VuforiaLocalizer.Parameters> createLocalizerPara(HardwareMap hardwareMap, boolean showScreen, boolean useWebcam){
         VuforiaLocalizer.Parameters parameters;
-        if (showScreen == SHOW_CAMERA.USE_SCREEN)
-        {
+        if (showScreen){
             int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
             parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         }
-        else{
-            //int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        else {
             parameters = new VuforiaLocalizer.Parameters();
         }
-
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection   = CAMERA_CHOICE;
+        if (useWebcam){
+            parameters.cameraName = hardwareMap.get(CameraName.class, webcamName);
+        }
+        else { parameters.cameraDirection   = CAMERA_CHOICE;}
         //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+        //
+        VuforiaLocalizer output = ClassFactory.getInstance().createVuforia(parameters);
+        return new Pair<VuforiaLocalizer, VuforiaLocalizer.Parameters>(output,parameters);
+    }
+    VuforiaLocalizer createLocalizer(HardwareMap hardwareMap, boolean showScreen, boolean useWebcam){
+        return  createLocalizerPara(hardwareMap,showScreen, useWebcam).first;
+
+    }
+
+    void init(HardwareMap hardwareMap, boolean showScreen, boolean useWebcam){
+        Pair<VuforiaLocalizer, VuforiaLocalizer.Parameters> vuforiaPair = createLocalizerPara(hardwareMap,showScreen, useWebcam);
+        vuforia = vuforiaPair.first;
 
         // Load the data sets for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
@@ -246,7 +266,7 @@ class MM_Vuforia {
 
         /**  Let all the trackable listeners know where the phone is.  */
         for (VuforiaTrackable trackable : allTrackables) {
-            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
+            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, vuforiaPair.second.cameraDirection);
         }
         targetsSkyStone.activate();
         // Note: To use the remote camera preview:

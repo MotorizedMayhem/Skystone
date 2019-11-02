@@ -46,6 +46,7 @@ import java.util.concurrent.RecursiveAction;
  * Demonstrates empty OpMode
  */
 @TeleOp(name = "TensorFlow Test", group = "Computer Vision")
+@Disabled
 public class TensorTests extends OpMode {
 
   private ElapsedTime runtime = new ElapsedTime();
@@ -58,7 +59,7 @@ public class TensorTests extends OpMode {
     //robot.init(hardwareMap);
     telemetry.addData("Status", "Starting Camera");
     telemetry.update();
-    tensorFlow.init(hardwareMap, 0.8, MM_Vuforia.SHOW_CAMERA.USE_SCREEN);
+    tensorFlow.init(hardwareMap, 0.8, MM_Vuforia.USE_SCREEN);
     telemetry.addData("Status", "Initialized");
     telemetry.update();
   }

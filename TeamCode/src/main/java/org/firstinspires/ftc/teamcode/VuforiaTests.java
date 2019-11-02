@@ -44,7 +44,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Demonstrates empty OpMode
  */
 @TeleOp(name = "Vuforia Test", group = "Computer Vision")
-//@Disabled
+@Disabled
 public class VuforiaTests extends OpMode {
 
   private ElapsedTime runtime = new ElapsedTime();
@@ -62,7 +62,7 @@ public class VuforiaTests extends OpMode {
     //robot.init(hardwareMap);
     telemetry.addData("Status", "Starting Camera");
     telemetry.update();
-    vuforia.init(hardwareMap, MM_Vuforia.SHOW_CAMERA.USE_SCREEN);
+    vuforia.init(hardwareMap, MM_Vuforia.USE_SCREEN, MM_Vuforia.USE_PHONECAM);
     telemetry.addData("Status", "Initialized");
     telemetry.update();
   }

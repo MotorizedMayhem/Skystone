@@ -34,9 +34,11 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.widget.ImageView;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDeviceType;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
@@ -64,6 +66,7 @@ import java.util.List;
 
 
 @TeleOp(name = "OpenCV Test", group = "Computer Vision")
+@Disabled
 public class OpenCVTests extends LinearOpMode {
     private VuforiaLocalizer vuforia;
     private String VUFORIA_KEY =

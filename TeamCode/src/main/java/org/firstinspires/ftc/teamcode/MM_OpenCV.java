@@ -37,25 +37,34 @@ class MM_OpenCV {
             "Adxgm9L/////AAABmf4X4r11gU5QjdS+o++UzoZdYE8ZWx5AnTVVr3lhgbm7NXTbtSGDU2CeUqRgcliLekQqIQtK4SCFCGmTrC9fu/fN0Mlnl1ul2djmLaT+4y7bxti+F9IMOFl2bh9yO3qeny+yyv1/uzupVJM522Jt8kEjMl6wklFQCKjow+pCDDvKQ8/HiA/HjIV4qIcc/sqnIJys6BWUt6Oj5c1NuJIIU6L7A8dkYh29xC1DHAt9jnIRefQHr7wo/OjfvqvL6x2VFkh2/o7z600lMwWjRv+X6oQ3df8JvFn3DOaOiw1Qs6pnLo4DcSZrQY0F9Y/RjM4/u+BrtF53QTw188j6t0PTrsh5hWwuUDLnp1WLA0zFZNs/";
 
     private FtcRobotControllerActivity activity = null;// = (FtcRobotControllerActivity) hardwareMap.appContext;
+    private boolean USE_WEBCAM;
+    int THRESHOLD = 25;
 
-    //private VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-    //private WebcamName webcamName;
-
+    MM_OpenCV(boolean USE_WEBCAM){
+        this.USE_WEBCAM = USE_WEBCAM;
+    }
     MM_OpenCV(){
+        this(MM_Vuforia.USE_PHONECAM); //use phone by default
+    }
 
+    enum Arrangement{
+        NONE,
+        LEFT,
+        RIGHT,
+        CENTER
     }
 
     boolean init(HardwareMap hardwareMap) //temp until we decide if we want a webcam
     {
         activity = (FtcRobotControllerActivity) hardwareMap.appContext;
-        int cameraMonitorViewId = activity.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-        //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-        WebcamName cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        //int cameraMonitorViewId = activity.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        //WebcamName cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        //parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        parameters.cameraName = cameraName;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        //parameters.cameraName = cameraName;
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -121,10 +130,23 @@ class MM_OpenCV {
         return img;
 
     }
-    static Mat CropMat(Mat in){
-        Rect roi = new Rect(new Point(0,300), new Point(in.width() -400,in.height()));
-        Mat out = in.submat(roi);
-        return out;
+    static Mat CropMat(Mat in, int offTop, int offRight){
+        Rect roi = new Rect(new Point(0,offTop), new Point(in.width() - offRight,in.height()));
+        return in.submat(roi).clone();
+    }
+    Mat CropMat(Mat in){
+        if (USE_WEBCAM){
+            return CropMatWebcam(in);
+        }
+        else{
+            return CropMatPhone(in);
+        }
+    }
+    static Mat CropMatPhone(Mat in){
+        return CropMat(in, 300, 400);
+    }
+    static Mat CropMatWebcam(Mat in){
+        return CropMat(in, 175, 300); //was 325
     }
 
     static Mat Morphology(Mat img){
@@ -151,9 +173,14 @@ class MM_OpenCV {
         return Threshold(img, 75);
     }
 
-    static Mat ProcessImg(Mat colorImg, int threshold){
+    static Mat ProcessImg(Mat colorImg, int threshold, int offTop, int offRight){
         Mat toBeProcessed = colorImg.clone();
-        return Morphology(Threshold(CropMat(toBeProcessed), threshold));
+        return Morphology(Threshold(CropMat(toBeProcessed, offTop, offRight), threshold));
+    }
+    Mat ProcessImg(Mat colorImg, int threshold){
+        Mat toBeProcessed = colorImg.clone();
+        if (USE_WEBCAM){return Morphology(Threshold(CropMatWebcam(toBeProcessed), threshold));}
+        else {return Morphology(Threshold(CropMatPhone(toBeProcessed), threshold));}
     }
 
 
@@ -203,6 +230,9 @@ class MM_OpenCV {
 
 
     static Mat DISPLAY(Mat colorImg, List<MatOfPoint> contours){
+        if (contours.size() == 0){
+            return colorImg;
+        }
         Imgproc.drawContours(colorImg, contours,-1, new Scalar(140, 235, 52), -1); //bright green
         int max_index = findLargestContourIndex(contours);
         MatOfPoint[] largestArray = new MatOfPoint[]{contours.get(max_index)};

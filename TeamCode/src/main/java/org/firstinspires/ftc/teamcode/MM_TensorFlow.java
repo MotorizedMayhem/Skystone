@@ -23,7 +23,7 @@ public class MM_TensorFlow {
 
     public MM_TensorFlow(){}     //empty constructor
 
-    public void init(HardwareMap hardwareMap, double min_confidence, MM_Vuforia.SHOW_CAMERA show_camera)
+    public void init(HardwareMap hardwareMap, double min_confidence, boolean show_camera)
     {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
@@ -38,7 +38,7 @@ public class MM_TensorFlow {
         }
 
         TFObjectDetector.Parameters tfodParameters;
-        if (show_camera == MM_Vuforia.SHOW_CAMERA.USE_SCREEN) {
+        if (show_camera) {
             int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                     "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
             tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
