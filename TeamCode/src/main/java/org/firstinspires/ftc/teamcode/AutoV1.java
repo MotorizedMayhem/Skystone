@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -12,18 +13,17 @@ import java.util.List;
 
 @Autonomous(name = "AutoV1")
 public class AutoV1 extends MM_LinearOpMode{
-    private DcMotor leftDrive;
-    private DcMotor rightDrive;
+    private MecanumYellow robot = new MecanumYellow();
     private final int THRESHOLD = 20;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
-        leftDrive = hardwareMap.dcMotor.get("left_drive");
-        rightDrive = hardwareMap.dcMotor.get("right_drive");
-        leftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        robot.init(hardwareMap);
+        telemetry.addData("openCV", openCVStartup);
+        telemetry.addData("imu object", robot.imu);
+        telemetry.update();
         waitForStart();
 
         Mat colorImg = openCV.getFrames();
@@ -53,8 +53,7 @@ public class AutoV1 extends MM_LinearOpMode{
         telemetry.addData("arrangement", blockArrangement.name());
         telemetry.update();
         if (blockArrangement != MM_OpenCV.Arrangement.RIGHT){
-            leftDrive.setPower(.12);
-            rightDrive.setPower(.12);
+            robot.vectorDrive(0.25, 180);
             Point center = MM_OpenCV.findCenterOfLargest(contours);
             while (center.x < 375 && opModeIsActive()){
                 colorImg = openCV.getFrames();
@@ -66,9 +65,44 @@ public class AutoV1 extends MM_LinearOpMode{
                 center = MM_OpenCV.findCenterOfLargest(contours);
             }
         }
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
+        robot.stop_motors();
+        sleep(1000);
+        robot.motor_powers(.3);
+        sleep(1100);
+        robot.stop_motors();
+        sleep(2000);
 
+        robot.rotate(0.2, MecanumYellow.CLOCKWISE);
+        double rotation = robot.getIMU_Heading(AngleUnit.DEGREES);
+        while (rotation > -90 && opModeIsActive()){
+            rotation = robot.getIMU_Heading(AngleUnit.DEGREES);
+            telemetry.addData("Current IMU:", rotation);
+            telemetry.update();
+        }
+        robot.stop_motors();
+        sleep(500);
 
+        robot.rotate(0.12, MecanumYellow.COUNTERCLOCKWISE);
+        rotation = robot.getIMU_Heading(AngleUnit.DEGREES);
+        while (rotation < -90 && opModeIsActive()){
+            rotation = robot.getIMU_Heading(AngleUnit.DEGREES);
+            telemetry.addData("Current IMU:", rotation);
+            telemetry.update();
+        }
+
+        robot.motor_powers(.35);
+        sleep(1000);
+        double seenRed = robot.getColor()[0];
+        robot.motor_powers(.2);
+        while (seenRed < .15 && opModeIsActive()){
+            seenRed = robot.getColor()[0];
+            telemetry.addData("Current Red:", seenRed);
+            telemetry.update();
+        }
+        robot.stop_motors();
+        sleep(500);
+        robot.motor_powers(-.2);
+        sleep(250);
+        robot.stop_motors();
     }
 }
