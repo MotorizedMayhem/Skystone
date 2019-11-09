@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.MM_Classes;
 
 import android.graphics.Color;
 import android.os.ParcelFormatException;
@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-class MecanumYellow {
+public class MecanumYellow {
     private final static int LED_PERIOD = 1;
 
     //Rate limit gamepad button presses to every 500ms
@@ -27,30 +27,30 @@ class MecanumYellow {
 
     private boolean usingEncoder;
 
-    DcMotor flDrive;
-    DcMotor frDrive;
-    DcMotor blDrive;
-    DcMotor brDrive;
+    public DcMotor flDrive;
+    public DcMotor frDrive;
+    public DcMotor blDrive;
+    public DcMotor brDrive;
 
     //Dual Imu
-    BNO055IMU imu;
+    public BNO055IMU imu;
     // State used for updating telemetry
     private Orientation angles;
     private Acceleration gravity;
 
     //Used for Color Sensor
-    NormalizedColorSensor colorSensor;
+    public NormalizedColorSensor colorSensor;
 
 
     private HardwareMap hardwareMap;
 
-    MecanumYellow(boolean usingEncoder) {
+    public MecanumYellow(boolean usingEncoder) {
         this.usingEncoder = usingEncoder;
     }
-    MecanumYellow(){this(false);} //default dont use them
+    public MecanumYellow(){this(false);} //default dont use them
 
 
-    void init(HardwareMap hwMap){
+    public void init(HardwareMap hwMap){
         hardwareMap = hwMap;
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -105,7 +105,7 @@ class MecanumYellow {
     }
 
 
-    void motor_powers(double power){
+    public void motor_powers(double power){
         motor_powers(power,power,power,power);
     }
     private void motor_powers(double fl, double fr, double bl, double br){
@@ -115,29 +115,29 @@ class MecanumYellow {
         brDrive.setPower(br);
     }
 
-    final static int
+    public final static int
         COUNTERCLOCKWISE = 1,
         CLOCKWISE = -1;
 
-    void rotate(double power, int direction){
+    public void rotate(double power, int direction){
         double left = power * direction;
         double right = power * -direction;
         motor_powers(left,right,left,right);
     }
-    void stop_motors(){
+    public void stop_motors(){
         flDrive.setPower(0);
         frDrive.setPower(0);
         blDrive.setPower(0);
         brDrive.setPower(0);
     }
 
-    double[] getColor() //returns in rgba
+    public double[] getColor() //returns in rgba
     {
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
         return new double[]{colors.red,colors.green,colors.blue,colors.alpha};
     }
 
-    double[] getColorHSV() //returns in rgba
+    public double[] getColorHSV() //returns in rgba
     {
         float[] hsvValues = new float[3];
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
@@ -145,15 +145,15 @@ class MecanumYellow {
         return new double[]{hsvValues[0],hsvValues[1],hsvValues[2]};
     }
 
-    Orientation getIMU_ZYX(AngleUnit unit){ //heading first
+    public Orientation getIMU_ZYX(AngleUnit unit){ //heading first
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, unit);
         return angles;
     }
-    double getIMU_Heading(AngleUnit unit){
+    public double getIMU_Heading(AngleUnit unit){
         return getIMU_ZYX(unit).firstAngle;
     }
 
-    void vectorDrive(double r, double degrees){
+    public void vectorDrive(double r, double degrees){
         double radians = (degrees * Math.PI)/ 180 - Math.PI/4;
         final double v1 = r * Math.cos(radians);
         final double v2 = r * Math.sin(radians);
@@ -161,7 +161,7 @@ class MecanumYellow {
         final double v4 = r * Math.cos(radians);
         motor_powers(v1,v2,v3,v4);
     }
-    void resetEncoders(){
+    public void resetEncoders(){
         if (usingEncoder) {
             frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -175,7 +175,7 @@ class MecanumYellow {
         }
     }
 
-    double encoderAvg(){
+    public double encoderAvg(){
         double total = frDrive.getCurrentPosition() + flDrive.getCurrentPosition()
                 + brDrive.getCurrentPosition() + blDrive.getCurrentPosition();
         return total/4;

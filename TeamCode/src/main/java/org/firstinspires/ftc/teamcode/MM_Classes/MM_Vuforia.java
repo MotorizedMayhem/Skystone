@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.MM_Classes;
 
 import android.hardware.camera2.CameraDevice;
 import android.util.Pair;
@@ -26,7 +26,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
-class MM_Vuforia {
+public class MM_Vuforia {
     // IMPORTANT:  For Phone Camera, set 1) the camera source and 2) the orientation, based on how your phone is mounted:
     // 1) Camera Source.  Valid choices are:  BACK (behind screen) or FRONT (selfie side)
     // 2) Phone Orientation. Choices are: PHONE_IS_PORTRAIT = true (portrait) or PHONE_IS_PORTRAIT = false (landscape)
@@ -60,7 +60,7 @@ class MM_Vuforia {
 
     // Class Members
     private OpenGLMatrix lastLocation = null;
-    VuforiaLocalizer vuforia = null;
+    public VuforiaLocalizer vuforia = null;
     private boolean targetVisible = false;
     private float phoneXRotate    = 0;
     private float phoneYRotate    = 0;
@@ -71,10 +71,10 @@ class MM_Vuforia {
     private List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
 
 
-    MM_Vuforia(VuforiaLocalizer.CameraDirection camera_pick){
+    public MM_Vuforia(VuforiaLocalizer.CameraDirection camera_pick){
         this.CAMERA_CHOICE = camera_pick;
     }
-    MM_Vuforia(){
+    public MM_Vuforia(){
         this(BACK);
     }
 
@@ -85,12 +85,12 @@ class MM_Vuforia {
         NO_USE_SCREEN
     }
     */
-    final static boolean
+    public final static boolean
         USE_SCREEN = true,
         NO_USE_SCREEN = false,
         USE_WEBCAM = true,
         USE_PHONECAM = false;
-    Pair<VuforiaLocalizer, VuforiaLocalizer.Parameters> createLocalizerPara(HardwareMap hardwareMap, boolean showScreen, boolean useWebcam){
+    public Pair<VuforiaLocalizer, VuforiaLocalizer.Parameters> createLocalizerPara(HardwareMap hardwareMap, boolean showScreen, boolean useWebcam){
         VuforiaLocalizer.Parameters parameters;
         if (showScreen){
             int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -109,12 +109,12 @@ class MM_Vuforia {
         VuforiaLocalizer output = ClassFactory.getInstance().createVuforia(parameters);
         return new Pair<VuforiaLocalizer, VuforiaLocalizer.Parameters>(output,parameters);
     }
-    VuforiaLocalizer createLocalizer(HardwareMap hardwareMap, boolean showScreen, boolean useWebcam){
+    public VuforiaLocalizer createLocalizer(HardwareMap hardwareMap, boolean showScreen, boolean useWebcam){
         return  createLocalizerPara(hardwareMap,showScreen, useWebcam).first;
 
     }
 
-    void init(HardwareMap hardwareMap, boolean showScreen, boolean useWebcam){
+    public void init(HardwareMap hardwareMap, boolean showScreen, boolean useWebcam){
         Pair<VuforiaLocalizer, VuforiaLocalizer.Parameters> vuforiaPair = createLocalizerPara(hardwareMap,showScreen, useWebcam);
         vuforia = vuforiaPair.first;
 
@@ -274,7 +274,7 @@ class MM_Vuforia {
         // Tap the preview window to receive a fresh image.
 
     }
-    Pair<OpenGLMatrix,String> scanTargets(){ //returns null if none seen, otherwise returns location matrix
+    public Pair<OpenGLMatrix,String> scanTargets(){ //returns null if none seen, otherwise returns location matrix
         String targetName;
         for (VuforiaTrackable trackable : allTrackables) {
             if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
@@ -291,7 +291,7 @@ class MM_Vuforia {
         return new Pair<>(null,null);
     }
 
-    static float[] getXYZ(OpenGLMatrix pose, DistanceUnit unit){ //returns position in mm
+    public static float[] getXYZ(OpenGLMatrix pose, DistanceUnit unit){ //returns position in mm
         VectorF translation = pose.getTranslation();
         float[] ans = new float[]{translation.get(0), translation.get(1), translation.get(2)};
         if (unit == DistanceUnit.INCH){
@@ -301,7 +301,7 @@ class MM_Vuforia {
         }
         return ans;
     }
-    static float[] getPitchRollYaw(OpenGLMatrix pose, AngleUnit unit){
+    public static float[] getPitchRollYaw(OpenGLMatrix pose, AngleUnit unit){
         Orientation rot = Orientation.getOrientation(pose,  EXTRINSIC, XYZ, unit);
         float [] ans = new float[]{rot.firstAngle, rot.secondAngle, rot.thirdAngle};
         return ans;

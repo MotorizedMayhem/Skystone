@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.MM_Classes;
 
 import android.graphics.Color;
 
@@ -19,41 +19,41 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-class MecanumChassis2019 {
+public class MecanumChassis2019 {
     private final static int LED_PERIOD = 1;
 
     //Rate limit gamepad button presses to every 500ms
     private final static int GAMEPAD_LOCKOUT = 500;
 
-    DcMotor flDrive;
-    DcMotor frDrive;
-    DcMotor blDrive;
-    DcMotor brDrive;
+    public DcMotor flDrive;
+    public DcMotor frDrive;
+    public DcMotor blDrive;
+    public DcMotor brDrive;
 
     //Dual Imu
-    BNO055IMU imuBase;
-    BNO055IMU imuTurn;
+    public BNO055IMU imuBase;
+    public BNO055IMU imuTurn;
     // State used for updating telemetry
     private Orientation angles;
     private Acceleration gravity;
 
     //Used for touch Sensor
-    DigitalChannel digitalTouch;
+    public DigitalChannel digitalTouch;
 
     //Used for Color Sensor
-    NormalizedColorSensor colorLeft;
-    NormalizedColorSensor colorRight;
+    public NormalizedColorSensor colorLeft;
+    public NormalizedColorSensor colorRight;
 
     //Light Strip
-    RevBlinkinLedDriver blinkinLedDriver;
-    RevBlinkinLedDriver.BlinkinPattern pattern;
+    public RevBlinkinLedDriver blinkinLedDriver;
+    public RevBlinkinLedDriver.BlinkinPattern pattern;
 
     private HardwareMap hardwareMap;
 
-    MecanumChassis2019() { }
+    public MecanumChassis2019() { }
 
 
-    void init(HardwareMap hwMap){
+    public void init(HardwareMap hwMap){
         hardwareMap = hwMap;
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -90,42 +90,42 @@ class MecanumChassis2019 {
     }
 
 
-    void motor_powers(double power){
+    public void motor_powers(double power){
         motor_powers(power,power,power,power);
     }
-    void motor_powers(double fl, double fr, double bl, double br){
+    public void motor_powers(double fl, double fr, double bl, double br){
         flDrive.setPower(fl);
         frDrive.setPower(fr);
         blDrive.setPower(bl);
         brDrive.setPower(br);
     }
-    void stop_motors(){
+    public void stop_motors(){
         flDrive.setPower(0);
         frDrive.setPower(0);
         blDrive.setPower(0);
         brDrive.setPower(0);
     }
 
-    double[] getColorLeft() //returns in rgba
+    public double[] getColorLeft() //returns in rgba
     {
         NormalizedRGBA colors = colorLeft.getNormalizedColors();
         return new double[]{colors.red,colors.green,colors.blue,colors.alpha};
     }
-    double[] getColorRight() //returns in rgba
+    public double[] getColorRight() //returns in rgba
     {
         NormalizedRGBA colors = colorRight.getNormalizedColors();
         return new double[]{colors.red,colors.green,colors.blue,colors.alpha};
     }
 
-    double[] getColorLeftHSV() //returns in rgba
+    public double[] getColorLeftHSV() //returns in rgba
     {
         float[] hsvValues = new float[3];
         NormalizedRGBA colors = colorLeft.getNormalizedColors();
         Color.colorToHSV(colors.toColor(), hsvValues);
         return new double[]{hsvValues[0],hsvValues[1],hsvValues[2]};
     }
-    
-    double[] getColorRightHSV() //returns in rgba
+
+    public double[] getColorRightHSV() //returns in rgba
     {
         float[] hsvValues = new float[3];
         NormalizedRGBA colors = colorRight.getNormalizedColors();
@@ -133,11 +133,11 @@ class MecanumChassis2019 {
         return new double[]{hsvValues[0],hsvValues[1],hsvValues[2]};
     }
 
-    void setLights(RevBlinkinLedDriver.BlinkinPattern pattern){
+    public void setLights(RevBlinkinLedDriver.BlinkinPattern pattern){
         blinkinLedDriver.setPattern(pattern);
     }
 
-    Orientation getIMU_ZYX(AngleUnit unit){
+    public Orientation getIMU_ZYX(AngleUnit unit){
         Orientation angles = imuBase.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, unit);
         return angles;
     }

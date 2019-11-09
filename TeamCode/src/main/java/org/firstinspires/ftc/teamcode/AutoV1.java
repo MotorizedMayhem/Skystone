@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.MM_Classes.MM_LinearOpMode;
+import org.firstinspires.ftc.teamcode.MM_Classes.MM_OpenCV;
+import org.firstinspires.ftc.teamcode.MM_Classes.MecanumYellow;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -12,22 +13,21 @@ import org.opencv.core.Point;
 import java.util.List;
 
 @Autonomous(name = "AutoV1")
-public class AutoV1 extends MM_LinearOpMode{
-    private MecanumYellow robot = new MecanumYellow();
-    private final int THRESHOLD = 20;
+public class AutoV1 extends MM_LinearOpMode {
+
 
 
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
-        robot.init(hardwareMap);
+        openCV.THRESHOLD = 25;
         telemetry.addData("openCV", openCVStartup);
         telemetry.addData("imu object", robot.imu);
         telemetry.update();
         waitForStart();
 
         Mat colorImg = openCV.getFrames();
-        Mat contourable = openCV.ProcessImg(colorImg, THRESHOLD);
+        Mat contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
         List<MatOfPoint> contours = MM_OpenCV.findContours(contourable);
         //Mat croppedColor = MM_OpenCV.CropMat(colorImg, topOff,rightOff);
         Mat croppedColor = openCV.CropMat(colorImg);
@@ -57,7 +57,7 @@ public class AutoV1 extends MM_LinearOpMode{
             Point center = MM_OpenCV.findCenterOfLargest(contours);
             while (center.x < 375 && opModeIsActive()){
                 colorImg = openCV.getFrames();
-                contourable = openCV.ProcessImg(colorImg, THRESHOLD);
+                contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
                 contours = MM_OpenCV.findContours(contourable);
                 croppedColor = openCV.CropMat(colorImg);
                 finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);

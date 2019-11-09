@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.MM_Classes;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -31,30 +31,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class MM_OpenCV {
+
+public class MM_OpenCV {
     private VuforiaLocalizer vuforia;
     private static final String VUFORIA_KEY =
             "Adxgm9L/////AAABmf4X4r11gU5QjdS+o++UzoZdYE8ZWx5AnTVVr3lhgbm7NXTbtSGDU2CeUqRgcliLekQqIQtK4SCFCGmTrC9fu/fN0Mlnl1ul2djmLaT+4y7bxti+F9IMOFl2bh9yO3qeny+yyv1/uzupVJM522Jt8kEjMl6wklFQCKjow+pCDDvKQ8/HiA/HjIV4qIcc/sqnIJys6BWUt6Oj5c1NuJIIU6L7A8dkYh29xC1DHAt9jnIRefQHr7wo/OjfvqvL6x2VFkh2/o7z600lMwWjRv+X6oQ3df8JvFn3DOaOiw1Qs6pnLo4DcSZrQY0F9Y/RjM4/u+BrtF53QTw188j6t0PTrsh5hWwuUDLnp1WLA0zFZNs/";
 
     private FtcRobotControllerActivity activity = null;// = (FtcRobotControllerActivity) hardwareMap.appContext;
     private boolean USE_WEBCAM;
-    int THRESHOLD = 25;
+    public int THRESHOLD = 25;
 
-    MM_OpenCV(boolean USE_WEBCAM){
+    public MM_OpenCV(boolean USE_WEBCAM){
         this.USE_WEBCAM = USE_WEBCAM;
     }
-    MM_OpenCV(){
+    public MM_OpenCV(){
         this(MM_Vuforia.USE_PHONECAM); //use phone by default
     }
 
-    enum Arrangement{
+    public enum Arrangement{
         NONE,
         LEFT,
         RIGHT,
         CENTER
     }
 
-    boolean init(HardwareMap hardwareMap) //temp until we decide if we want a webcam
+    public boolean init(HardwareMap hardwareMap) //temp until we decide if we want a webcam
     {
         activity = (FtcRobotControllerActivity) hardwareMap.appContext;
         //int cameraMonitorViewId = activity.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -76,7 +77,7 @@ class MM_OpenCV {
         return OpenCVLoader.initDebug();
 
     }
-    boolean init(HardwareMap hardwareMap,VuforiaLocalizer vuforia){
+    public boolean init(HardwareMap hardwareMap,VuforiaLocalizer vuforia){
         activity = (FtcRobotControllerActivity) hardwareMap.appContext;
         this.vuforia = vuforia;
 
@@ -87,7 +88,7 @@ class MM_OpenCV {
         return OpenCVLoader.initDebug();
     }
 
-    Mat getFrames(){ //think about imputing opmode as using this
+    public Mat getFrames(){ //think about imputing opmode as using this
         /*
         returns Mat FullColorImage
          */
@@ -130,11 +131,11 @@ class MM_OpenCV {
         return img;
 
     }
-    static Mat CropMat(Mat in, int offTop, int offRight){
+    public static Mat CropMat(Mat in, int offTop, int offRight){
         Rect roi = new Rect(new Point(0,offTop), new Point(in.width() - offRight,in.height()));
         return in.submat(roi).clone();
     }
-    Mat CropMat(Mat in){
+    public Mat CropMat(Mat in){
         if (USE_WEBCAM){
             return CropMatWebcam(in);
         }
@@ -142,14 +143,14 @@ class MM_OpenCV {
             return CropMatPhone(in);
         }
     }
-    static Mat CropMatPhone(Mat in){
+    public static Mat CropMatPhone(Mat in){
         return CropMat(in, 300, 400);
     }
-    static Mat CropMatWebcam(Mat in){
+    public static Mat CropMatWebcam(Mat in){
         return CropMat(in, 175, 300); //was 325
     }
 
-    static Mat Morphology(Mat img){
+    public static Mat Morphology(Mat img){
         Mat output = new Mat(img.size(), img.type()); //creates output like input
         int operation = Imgproc.MORPH_CLOSE; // dilation followed by erosion
         int kernelShape = Imgproc.CV_SHAPE_RECT;
@@ -160,7 +161,7 @@ class MM_OpenCV {
         return output;
     }
 
-    static Mat Threshold(Mat img, double thresh){
+    public static Mat Threshold(Mat img, double thresh){
         Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2GRAY); //may be unneeded
         Mat output = new Mat(img.size(), img.type()); //creates output like input
         int threshType = Imgproc.THRESH_BINARY_INV;
@@ -169,22 +170,20 @@ class MM_OpenCV {
         return output;
     }
 
-    static Mat Threshold(Mat img){
-        return Threshold(img, 75);
-    }
+    public Mat Threshold(Mat img){return Threshold(img, THRESHOLD);}
 
-    static Mat ProcessImg(Mat colorImg, int threshold, int offTop, int offRight){
+    public static Mat ProcessImg(Mat colorImg, int threshold, int offTop, int offRight){
         Mat toBeProcessed = colorImg.clone();
         return Morphology(Threshold(CropMat(toBeProcessed, offTop, offRight), threshold));
     }
-    Mat ProcessImg(Mat colorImg, int threshold){
+    public Mat ProcessImg(Mat colorImg, int threshold){
         Mat toBeProcessed = colorImg.clone();
         if (USE_WEBCAM){return Morphology(Threshold(CropMatWebcam(toBeProcessed), threshold));}
         else {return Morphology(Threshold(CropMatPhone(toBeProcessed), threshold));}
     }
 
 
-    static List<MatOfPoint> findContours(Mat img){
+    public static List<MatOfPoint> findContours(Mat img){
         List<MatOfPoint> output = new ArrayList<>();
         Mat hierarchy = new Mat();
         int mode = Imgproc.RETR_LIST;
@@ -212,7 +211,7 @@ class MM_OpenCV {
         return max_index;
     }
 
-    static Point findCenterOfLargest(List<MatOfPoint> contours, int max_index){
+    public static Point findCenterOfLargest(List<MatOfPoint> contours, int max_index){
         RotatedRect rect = null;
         try {
             rect = Imgproc.minAreaRect(new MatOfPoint2f((contours.get(max_index)).toArray()));
@@ -223,13 +222,13 @@ class MM_OpenCV {
         return rect.center;
     }
 
-    static Point findCenterOfLargest(List<MatOfPoint> contours){
+    public static Point findCenterOfLargest(List<MatOfPoint> contours){
         return findCenterOfLargest(contours, findLargestContourIndex(contours));
     }
 
 
 
-    static Mat DISPLAY(Mat colorImg, List<MatOfPoint> contours){
+    public static Mat DISPLAY(Mat colorImg, List<MatOfPoint> contours){
         if (contours.size() == 0){
             return colorImg;
         }
@@ -248,7 +247,7 @@ class MM_OpenCV {
 
         return colorImg;
     }
-    static void printToDisplay(Mat colorImg, HardwareMap hardwareMap){
+    public static void printToDisplay(Mat colorImg, HardwareMap hardwareMap){
         final FtcRobotControllerActivity act = (FtcRobotControllerActivity) hardwareMap.appContext;
         Bitmap bmp = null;
         try {
