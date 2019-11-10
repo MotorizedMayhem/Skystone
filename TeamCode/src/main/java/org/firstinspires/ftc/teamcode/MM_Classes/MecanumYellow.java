@@ -108,7 +108,7 @@ public class MecanumYellow {
     public void motor_powers(double power){
         motor_powers(power,power,power,power);
     }
-    private void motor_powers(double fl, double fr, double bl, double br){
+    public void motor_powers(double fl, double fr, double bl, double br){
         flDrive.setPower(fl);
         frDrive.setPower(fr);
         blDrive.setPower(bl);
@@ -116,8 +116,8 @@ public class MecanumYellow {
     }
 
     public final static int
-        COUNTERCLOCKWISE = 1,
-        CLOCKWISE = -1;
+        COUNTERCLOCKWISE = -1,
+        CLOCKWISE = 1;
 
     public void rotate(double power, int direction){
         double left = power * direction;
@@ -153,7 +153,7 @@ public class MecanumYellow {
         return getIMU_ZYX(unit).firstAngle;
     }
 
-    public void vectorDrive(double r, double degrees){
+    public void vectorDrive(double r, double degrees){ //degrees corresponds to a normal unit circle
         double radians = (degrees * Math.PI)/ 180 - Math.PI/4;
         final double v1 = r * Math.cos(radians);
         final double v2 = r * Math.sin(radians);

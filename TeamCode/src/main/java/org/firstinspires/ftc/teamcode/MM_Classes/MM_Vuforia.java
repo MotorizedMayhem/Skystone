@@ -114,7 +114,7 @@ public class MM_Vuforia {
 
     }
 
-    public void init(HardwareMap hardwareMap, boolean showScreen, boolean useWebcam){
+    public VuforiaLocalizer init(HardwareMap hardwareMap, boolean showScreen, boolean useWebcam){
         Pair<VuforiaLocalizer, VuforiaLocalizer.Parameters> vuforiaPair = createLocalizerPara(hardwareMap,showScreen, useWebcam);
         vuforia = vuforiaPair.first;
 
@@ -272,7 +272,7 @@ public class MM_Vuforia {
         // Note: To use the remote camera preview:
         // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
         // Tap the preview window to receive a fresh image.
-
+        return vuforia;
     }
     public Pair<OpenGLMatrix,String> scanTargets(){ //returns null if none seen, otherwise returns location matrix
         String targetName;

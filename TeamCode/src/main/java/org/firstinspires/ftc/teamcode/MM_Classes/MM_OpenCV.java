@@ -193,7 +193,7 @@ public class MM_OpenCV {
         return output;
     }
 
-    private static int findLargestContourIndex(List<MatOfPoint> contours){
+    public static int findLargestContourIndex(List<MatOfPoint> contours){
         double[] areas = new double[contours.size()];
         for (int i = 0; i<contours.size(); i++) {
             areas[i] = Imgproc.contourArea(contours.get(i));
@@ -273,6 +273,7 @@ public class MM_OpenCV {
                 ImageView bitmapHolder = act.getBitmapDisplay();
                 //bitmapHolder.setVisibility(View.VISIBLE);
                 bitmapHolder.setImageBitmap(bmpFinal);
+                bitmapHolder.setVisibility(View.VISIBLE);
             }
         });
     }

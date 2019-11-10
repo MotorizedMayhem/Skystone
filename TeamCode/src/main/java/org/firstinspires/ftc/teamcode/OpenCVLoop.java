@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.MM_Classes.MM_OpenCV;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
+import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 
@@ -67,6 +68,9 @@ public class OpenCVLoop extends MM_LinearOpMode {
                     blockArrangement = Arrangement.RIGHT;
                 }
                 telemetry.addData("Block Center", "( %.2f , %.2f )", blockCenter.x, blockCenter.y);
+                int index = MM_OpenCV.findLargestContourIndex(contours);
+                Point center = MM_OpenCV.findCenterOfLargest(contours,index);
+                telemetry.addData("largest contour area", Imgproc.contourArea(contours.get(index)));
             }
 
             //telemetry.addData("Block Center",blockCenter.toString());
