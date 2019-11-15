@@ -45,6 +45,8 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_OpenCV;
+import org.opencv.android.MM_OpenCVLoader;
+import org.opencv.android.MM_StaticHelper;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.CvException;
@@ -75,10 +77,7 @@ public class OpenCVTests extends LinearOpMode {
   @Override
   public void runOpMode(){
       final FtcRobotControllerActivity act = (FtcRobotControllerActivity) hardwareMap.appContext;
-      int cameraMonitorViewId = act.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-      VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-      //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
+      VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
       parameters.vuforiaLicenseKey = VUFORIA_KEY;
       parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
 
@@ -87,9 +86,12 @@ public class OpenCVTests extends LinearOpMode {
 
       //  Instantiate the Vuforia engine
       vuforia = ClassFactory.getInstance().createVuforia(parameters);
-      boolean inited = OpenCVLoader.initDebug();
+      boolean inited = MM_OpenCVLoader.initImgprocOnly(); //test test boiiiii TODO
+      String libs = MM_StaticHelper.getLibraryList();
+      //boolean inited = MM_StaticHelper.initOpenCV(false); //
       telemetry.addData("vuforia status", vuforia.toString());
       telemetry.addData("openCV status", inited);
+      telemetry.addData("Libs", libs);
       telemetry.update();
 
 
