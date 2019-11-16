@@ -4,10 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.opencv.android.MM_OpenCVLoader;
-import org.opencv.android.MM_StaticHelper;
 import org.opencv.android.OpenCVLoader;
 
 @TeleOp(name = "Minimized OpenCV")
@@ -28,7 +25,7 @@ public class MinOpenCV extends LinearOpMode {
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
-        boolean inited = MM_OpenCVLoader.initImgprocOnly(); //test test boiiiii TODO
+        boolean inited = OpenCVLoader.initDebug(); //test test boiiiii TODO
 
         //boolean inited = OpenCVLoader.initDebug(false); //
         telemetry.addData("vuforia status", vuforia.toString());
@@ -37,10 +34,6 @@ public class MinOpenCV extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-
-        String libs = MM_OpenCVLoader.getLibraryList();
-        telemetry.addData("Libs: ", libs);
-        telemetry.update();
         while (opModeIsActive())
         {
             idle();
