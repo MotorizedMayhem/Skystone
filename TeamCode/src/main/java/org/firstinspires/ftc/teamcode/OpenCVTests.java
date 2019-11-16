@@ -65,7 +65,6 @@ import java.util.List;
 
 
 @TeleOp(name = "OpenCV Test", group = "Computer Vision")
-@Disabled
 public class OpenCVTests extends LinearOpMode {
     private VuforiaLocalizer vuforia;
     private String VUFORIA_KEY =
@@ -87,11 +86,11 @@ public class OpenCVTests extends LinearOpMode {
       //  Instantiate the Vuforia engine
       vuforia = ClassFactory.getInstance().createVuforia(parameters);
       boolean inited = MM_OpenCVLoader.initImgprocOnly(); //test test boiiiii TODO
-      String libs = MM_StaticHelper.getLibraryList();
+      //String libs = MM_StaticHelper.getLibraryList();
       //boolean inited = MM_StaticHelper.initOpenCV(false); //
       telemetry.addData("vuforia status", vuforia.toString());
       telemetry.addData("openCV status", inited);
-      telemetry.addData("Libs", libs);
+      //telemetry.addData("Libs", libs);
       telemetry.update();
 
 

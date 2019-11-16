@@ -126,4 +126,9 @@ public class MM_OpenCVLoader
     {
         return MM_StaticHelper.initOpenCV(InitCuda);
     }
+
+
+    public static String getLibraryList(){
+        return MM_StaticHelper.publicGetLibraryList();
+    }
 }

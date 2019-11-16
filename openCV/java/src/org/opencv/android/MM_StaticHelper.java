@@ -65,7 +65,8 @@ public class MM_StaticHelper { //made public in order to use init Libs
         try
         {
             System.loadLibrary("opencv_info");
-            libs = "opencv_java3;opencv_core;opencv_imgproc"; //no idea if this works
+            //libs = "opencv_java3;opencv_core;opencv_imgproc"; //no idea if this works
+            libs = "opencv_java3";
         }
         catch(UnsatisfiedLinkError e)
         {
@@ -139,5 +140,10 @@ public class MM_StaticHelper { //made public in order to use init Libs
 
     private static final String TAG = "OpenCV/MM_StaticHelper";
 
-    public static native String getLibraryList(); //TODO was private, find return then fix it
+    private static native String getLibraryList(); //TODO was private, find return then fix it
+
+    public static String publicGetLibraryList(){
+        System.loadLibrary("opencv_info");
+        return getLibraryList();
+    }
 }
