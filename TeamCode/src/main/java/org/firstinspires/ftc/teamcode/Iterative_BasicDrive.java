@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_IterativeOpMode;
 
+@TeleOp(name = "Iterative Drive")
 public class Iterative_BasicDrive extends MM_IterativeOpMode {
     @Override
     public void init() {

@@ -153,6 +153,12 @@ public class MecanumYellow {
         return getIMU_ZYX(unit).firstAngle;
     }
 
+    public final static double
+        LEFT = 180,
+        FORWARD = 90,
+        RIGHT = 0,
+        BACKWARD = 270;
+
     public void vectorDrive(double r, double degrees){ //degrees corresponds to a normal unit circle
         double radians = (degrees * Math.PI)/ 180 - Math.PI/4;
         final double v1 = r * Math.cos(radians);

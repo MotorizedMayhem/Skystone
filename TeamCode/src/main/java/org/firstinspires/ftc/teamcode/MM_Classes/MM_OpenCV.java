@@ -48,12 +48,13 @@ public class MM_OpenCV {
         this(MM_Vuforia.USE_PHONECAM); //use phone by default
     }
 
-    public enum Arrangement{
-        NONE,
-        LEFT,
-        RIGHT,
-        CENTER
-    }
+    final public static int
+        NONE = -1,
+        LEFT = 3,
+        CENTER = 2,
+        RIGHT = 1;
+
+
 
     public boolean init(HardwareMap hardwareMap) //temp until we decide if we want a webcam
     {

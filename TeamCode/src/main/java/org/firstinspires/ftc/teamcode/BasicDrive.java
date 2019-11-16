@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MM_Classes.MecanumYellow;
 
-
+@Disabled
 @TeleOp(name = "Basic Drive")
 public class BasicDrive extends LinearOpMode {
     MecanumYellow robot = new MecanumYellow();
