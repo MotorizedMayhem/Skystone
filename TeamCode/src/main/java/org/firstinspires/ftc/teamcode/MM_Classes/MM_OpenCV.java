@@ -163,7 +163,7 @@ public class MM_OpenCV {
     }
 
     public static Mat Threshold(Mat img, double thresh){
-        Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2GRAY); //may be unneeded
+        //Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2GRAY); //may be unneeded
         Mat output = new Mat(img.size(), img.type()); //creates output like input
         int threshType = Imgproc.THRESH_BINARY_INV;
         double maxVal = 255;

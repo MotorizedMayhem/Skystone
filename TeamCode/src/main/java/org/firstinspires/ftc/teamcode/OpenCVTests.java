@@ -63,7 +63,6 @@ import java.util.List;
 
 
 @TeleOp(name = "OpenCV Test", group = "Computer Vision")
-@Disabled
 public class OpenCVTests extends LinearOpMode {
     private VuforiaLocalizer vuforia;
     private String VUFORIA_KEY =
@@ -75,10 +74,7 @@ public class OpenCVTests extends LinearOpMode {
   @Override
   public void runOpMode(){
       final FtcRobotControllerActivity act = (FtcRobotControllerActivity) hardwareMap.appContext;
-      int cameraMonitorViewId = act.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-      VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-      //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
+      VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
       parameters.vuforiaLicenseKey = VUFORIA_KEY;
       parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
 
@@ -87,9 +83,10 @@ public class OpenCVTests extends LinearOpMode {
 
       //  Instantiate the Vuforia engine
       vuforia = ClassFactory.getInstance().createVuforia(parameters);
-      boolean inited = OpenCVLoader.initDebug();
+      boolean inited = OpenCVLoader.initDebug(false);
       telemetry.addData("vuforia status", vuforia.toString());
       telemetry.addData("openCV status", inited);
+      //telemetry.addData("Libs", libs);
       telemetry.update();
 
 
