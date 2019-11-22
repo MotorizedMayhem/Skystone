@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.4)
+project( TeamCode )
+set(OpenCV_DIR ../openCV/native/jni)
+set(CMAKE_INSTALL_PREFIX ../openCV)
+set(OpenCV_CONFIG_SUBDIR "/abi-armeabi-v7a")
+find_package( OpenCV REQUIRED core imgproc java)
+add_executable(TeamCode temp.cpp)
+target_link_libraries(TeamCode ${OpenCV_LIBS})
