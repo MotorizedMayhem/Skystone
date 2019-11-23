@@ -136,6 +136,10 @@ public class MM_OpenCV {
         Rect roi = new Rect(new Point(0,offTop), new Point(in.width() - offRight,in.height()));
         return in.submat(roi).clone();
     }
+    public static Mat CropMatBlue(Mat in, int offTop, int offLeft){
+        Rect roi = new Rect(new Point(offLeft,offTop), new Point(in.width(),in.height()));
+        return in.submat(roi).clone();
+    }
     public Mat CropMat(Mat in){
         if (USE_WEBCAM){
             return CropMatWebcam(in);
@@ -144,12 +148,17 @@ public class MM_OpenCV {
             return CropMatPhone(in);
         }
     }
+    public Mat CropMatBlue(Mat in){
+        return CropMatWebcamBlue(in);
+    }
+
     public static Mat CropMatPhone(Mat in){
         return CropMat(in, 300, 400);
     }
     public static Mat CropMatWebcam(Mat in){
         return CropMat(in, 175, 300); //was 325
     }
+    public static Mat CropMatWebcamBlue(Mat in){return CropMatBlue(in, 175, 300);}
 
     public static Mat Morphology(Mat img){
         Mat output = new Mat(img.size(), img.type()); //creates output like input
@@ -163,7 +172,7 @@ public class MM_OpenCV {
     }
 
     public static Mat Threshold(Mat img, double thresh){
-        //Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2GRAY); //may be unneeded
+        Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2GRAY); //may be unneeded
         Mat output = new Mat(img.size(), img.type()); //creates output like input
         int threshType = Imgproc.THRESH_BINARY_INV;
         double maxVal = 255;
@@ -177,9 +186,19 @@ public class MM_OpenCV {
         Mat toBeProcessed = colorImg.clone();
         return Morphology(Threshold(CropMat(toBeProcessed, offTop, offRight), threshold));
     }
+    public static Mat ProcessImgBlue(Mat colorImg, int threshold, int offTop, int offLeft){
+        Mat toBeProcessed = colorImg.clone();
+        return Morphology(Threshold(CropMatBlue(toBeProcessed, offTop, offLeft), threshold));
+    }
+
     public Mat ProcessImg(Mat colorImg, int threshold){
         Mat toBeProcessed = colorImg.clone();
         if (USE_WEBCAM){return Morphology(Threshold(CropMatWebcam(toBeProcessed), threshold));}
+        else {return Morphology(Threshold(CropMatPhone(toBeProcessed), threshold));}
+    }
+    public Mat ProcessImgBlue(Mat colorImg, int threshold){
+        Mat toBeProcessed = colorImg.clone();
+        if (USE_WEBCAM){return Morphology(Threshold(CropMatWebcamBlue(toBeProcessed), threshold));}
         else {return Morphology(Threshold(CropMatPhone(toBeProcessed), threshold));}
     }
 

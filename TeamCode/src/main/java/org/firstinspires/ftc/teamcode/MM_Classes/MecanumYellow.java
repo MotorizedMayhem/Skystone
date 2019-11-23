@@ -69,19 +69,20 @@ public class MecanumYellow {
         blDrive = hardwareMap.get(DcMotor.class, "bl");
         brDrive = hardwareMap.get(DcMotor.class, "br");
         //channel end forward
-        /*
+
         flDrive.setDirection(DcMotor.Direction.REVERSE);
         frDrive.setDirection(DcMotor.Direction.FORWARD);
         blDrive.setDirection(DcMotor.Direction.REVERSE);
         brDrive.setDirection(DcMotor.Direction.FORWARD);
-        */
+
 
         //plate end forward
+        /*
         flDrive.setDirection(DcMotor.Direction.FORWARD);
         frDrive.setDirection(DcMotor.Direction.REVERSE);
         blDrive.setDirection(DcMotor.Direction.FORWARD);
         brDrive.setDirection(DcMotor.Direction.REVERSE);
-
+        */
 
         if (usingEncoder){
             flDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

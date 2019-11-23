@@ -12,8 +12,8 @@ import org.opencv.imgproc.Imgproc;
 import java.util.List;
 
 
-@TeleOp(name = "IdentifyBlock")
-public class OpenCVLoop extends MM_LinearOpMode {
+@TeleOp(name = "IdentifyBlock BLUE")
+public class OpenCVLoopBlue extends MM_LinearOpMode {
 
 
     @Override
@@ -26,7 +26,7 @@ public class OpenCVLoop extends MM_LinearOpMode {
 
         waitForStart();
         int threshold = 20;
-        int rightOff = 325;
+        int leftOff = 300;
         int topOff = 175;
         while (opModeIsActive()) {
             Mat colorImg = openCV.getFrames();
@@ -37,19 +37,19 @@ public class OpenCVLoop extends MM_LinearOpMode {
                 topOff++;
             }
             if (gamepad1.dpad_left){
-                rightOff++;
+                leftOff++;
             }
             if (gamepad1.dpad_right){
-                rightOff--;
+                leftOff--;
             }
             //telemetry.addData("threshold", threshold);
             telemetry.addData("top", topOff);
-            telemetry.addData("right", rightOff);
-            //Mat contourable = MM_OpenCV.ProcessImg(colorImg, threshold, topOff, rightOff);
-            Mat contourable = openCV.ProcessImg(colorImg, threshold);
+            telemetry.addData("left", leftOff);
+            Mat contourable = MM_OpenCV.ProcessImgBlue(colorImg, threshold, topOff, leftOff);
+            //Mat contourable = openCV.ProcessImg(colorImg, threshold);
             List<MatOfPoint> contours = MM_OpenCV.findContours(contourable);
-            //Mat croppedColor = MM_OpenCV.CropMat(colorImg, topOff,rightOff);
-            Mat croppedColor = openCV.CropMat(colorImg);
+            Mat croppedColor = MM_OpenCV.CropMatBlue(colorImg, topOff,leftOff);
+            //Mat croppedColor = openCV.CropMat(colorImg);
             Mat finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
             MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
             Arrangement blockArrangement = Arrangement.NONE;
