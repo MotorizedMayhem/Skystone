@@ -2,12 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_LinearOpMode;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_OpenCV;
-import org.firstinspires.ftc.teamcode.MM_Classes.MM_Vuforia;
 import org.firstinspires.ftc.teamcode.MM_Classes.MecanumYellow;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -16,8 +12,8 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 
-@Autonomous(name = "AutoV1")
-public class AutoV1 extends MM_LinearOpMode {
+@Autonomous(name = "Auto BLUE", group = "Depot")
+public class AutoV1_BLUE extends MM_LinearOpMode {
 
 
 
@@ -29,10 +25,9 @@ public class AutoV1 extends MM_LinearOpMode {
         waitForStart();
 
         Mat colorImg = openCV.getFrames();
-        Mat contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
+        Mat contourable = openCV.ProcessImgBlue(colorImg, openCV.THRESHOLD);
         List<MatOfPoint> contours = MM_OpenCV.findContours(contourable);
-        //Mat croppedColor = MM_OpenCV.CropMat(colorImg, topOff,rightOff);
-        Mat croppedColor = openCV.CropMat(colorImg);
+        Mat croppedColor = openCV.CropMatBlue(colorImg);
         Mat finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
         MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
         int blockArrangement = MM_OpenCV.NONE;
@@ -44,24 +39,24 @@ public class AutoV1 extends MM_LinearOpMode {
 
             //sleep(2000);
             if (scaledXCenter < 0.33) {
-                blockArrangement = MM_OpenCV.LEFT;
+                blockArrangement = MM_OpenCV.RIGHT; //incorrect but imporant for later calcs
             } else if (scaledXCenter < 0.66) //valid bc we already checked the first
             {
                 blockArrangement = MM_OpenCV.CENTER;
-            } else if (scaledXCenter >= 0.66) { //dont use else in case something rlly messed up
-                blockArrangement = MM_OpenCV.RIGHT;
+            } else if (scaledXCenter >= 0.66) {
+                blockArrangement = MM_OpenCV.LEFT;  //incorrect but imporant for later calcs
             }
         }
         telemetry.addData("arrangement", blockArrangement);
         telemetry.update();
         if (blockArrangement != MM_OpenCV.NONE){ //maybe was right
-            robot.vectorDrive(0.25, 180);
+            robot.vectorDrive(0.25, MecanumYellow.RIGHT);
             Point center = MM_OpenCV.findCenterOfLargest(contours);
-            while (center.x < 375 && opModeIsActive()){
+            while (center.x > 125 && opModeIsActive()){
                 colorImg = openCV.getFrames();
-                contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
+                contourable = openCV.ProcessImgBlue(colorImg, openCV.THRESHOLD);
                 contours = MM_OpenCV.findContours(contourable);
-                croppedColor = openCV.CropMat(colorImg);
+                croppedColor = openCV.CropMatBlue(colorImg);
                 finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
                 MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
                 center = MM_OpenCV.findCenterOfLargest(contours);
@@ -83,38 +78,38 @@ public class AutoV1 extends MM_LinearOpMode {
         sleep(200);
 
         //strafe toward line
-        robot.vectorDrive(.6,0);
-        double distance = (blockArrangement/3.0) * 1000; //little sus
+        robot.vectorDrive(.6,MecanumYellow.LEFT);
+        double distance = (blockArrangement/3.0) * 1000 + 450; //little sus
         sleep(Math.round(distance));
 
         //slower color detect
-        robot.vectorDrive(.2,0);
-        double seenRed = robot.getColor()[0];
-        while (seenRed < .10 && opModeIsActive()){
-            seenRed = robot.getColor()[0];
-            telemetry.addData("Current Red:", seenRed);
+        robot.vectorDrive(.2,MecanumYellow.LEFT);
+        double seenBlue = robot.getColor()[2];
+        while (seenBlue < .1 && opModeIsActive()){
+            seenBlue = robot.getColor()[2];
+            telemetry.addData("Current Blue:", seenBlue);
             telemetry.update();
         }
-        robot.vectorDrive(.4,0);
-        sleep(1100);
+        robot.vectorDrive(.4,MecanumYellow.LEFT);
+        sleep(1250);
         robot.stop_motors();
         sleep(2000); //drop off block
 
 
-        robot.vectorDrive(.65,200);//back off and go left
-        sleep(2000);
+        robot.vectorDrive(.65,330);//back off and go left //TODO
+        sleep(2300);
 
         //TODO SQUARE UP
 
-        robot.vectorDrive(.25,180);
-        Point center = new Point (0,0); //starts us with a loop
-        int targetPixel = 375;
-        if (blockArrangement == MM_OpenCV.LEFT){targetPixel = 300;} //TODO 150 is too little, check 300
-        while (center.x < targetPixel && opModeIsActive()){
+        robot.vectorDrive(.25,MecanumYellow.RIGHT);
+        Point center = new Point (375,0); //starts us with a loop
+        int targetPixel = 125;     //LEFT really means right
+        if (blockArrangement == MM_OpenCV.LEFT){targetPixel = 150;} //TODO 150 is too little, check 300
+        while (center.x > targetPixel && opModeIsActive()){
             colorImg = openCV.getFrames();
-            contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
+            contourable = openCV.ProcessImgBlue(colorImg, openCV.THRESHOLD);
             contours = MM_OpenCV.findContours(contourable);
-            croppedColor = openCV.CropMat(colorImg);
+            croppedColor = openCV.CropMatBlue(colorImg);
             finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
             MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
             if (contours.size() != 0) {
@@ -132,7 +127,7 @@ public class AutoV1 extends MM_LinearOpMode {
 
         //forward toward the blocks
         robot.motor_powers(.3);
-        sleep(1050);
+        sleep(900);
         robot.stop_motors();
         sleep(1000);
 
@@ -144,25 +139,25 @@ public class AutoV1 extends MM_LinearOpMode {
         robot.stop_motors();
         sleep(200);
 
-        //fast back to red
-        robot.vectorDrive(.7,0);
-        distance = ((blockArrangement/3.0) * 1000) + 500; //little sus
+        //fast back to blue
+        robot.vectorDrive(.7,MecanumYellow.LEFT);
+        distance = ((blockArrangement/3.0) * 1000) + 1000; //little sus
         sleep(Math.round(distance));
 
-        robot.vectorDrive(.2,0);
-        seenRed = robot.getColor()[0];
-        while (seenRed < .10 && opModeIsActive()){
-            seenRed = robot.getColor()[0];
-            telemetry.addData("Current Red:", seenRed);
+        robot.vectorDrive(.2,MecanumYellow.LEFT);
+        seenBlue = robot.getColor()[2];
+        while (seenBlue < .1 && opModeIsActive()){
+            seenBlue = robot.getColor()[2];
+            telemetry.addData("Current Blue:", seenBlue);
             telemetry.update();
         }
-        robot.vectorDrive(.4,0);
-        sleep(1100);
+        robot.vectorDrive(.4,MecanumYellow.LEFT);
+        sleep(1250);
         robot.stop_motors();
-        sleep(2000); //drop off block
+        sleep(1000); //drop off block
 
-        robot.vectorDrive(.4, 180);
-        sleep(250);
+        robot.vectorDrive(.4, MecanumYellow.RIGHT);
+        sleep(500);
         robot.stop_motors();
         end();
 

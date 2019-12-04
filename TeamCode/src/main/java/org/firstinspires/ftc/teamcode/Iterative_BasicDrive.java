@@ -16,7 +16,7 @@ public class Iterative_BasicDrive extends MM_IterativeOpMode {
     public void loop(){
         double r = Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y) * .4;
         double radians = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
-        double turn = -gamepad1.right_stick_x * .4;
+        double turn = gamepad1.right_stick_x * .3;
         final double v1 = r * Math.cos(radians) - turn;
         final double v2 = r * Math.sin(radians) + turn;
         final double v3 = r * Math.sin(radians) - turn;

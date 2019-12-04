@@ -61,7 +61,7 @@ import org.opencv.imgproc.Imgproc;
 import java.util.Arrays;
 import java.util.List;
 
-
+@Disabled
 @TeleOp(name = "OpenCV Test", group = "Computer Vision")
 public class OpenCVTests extends LinearOpMode {
     private VuforiaLocalizer vuforia;
