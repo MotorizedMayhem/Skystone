@@ -33,13 +33,15 @@ public class MecanumYellow {
     public DcMotor brDrive;
 
     //Dual Imu
-    public BNO055IMU imu;
+    public BNO055IMU imuBase;
+    public BNO055IMU imuTop;
     // State used for updating telemetry
     private Orientation angles;
     private Acceleration gravity;
 
     //Used for Color Sensor
-    public NormalizedColorSensor colorSensor;
+    public NormalizedColorSensor colorLeft;
+    public NormalizedColorSensor colorRight;
 
 
     private HardwareMap hardwareMap;
@@ -60,8 +62,10 @@ public class MecanumYellow {
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
+        imuBase = hardwareMap.get(BNO055IMU.class, "imuBase");
+        imuTop = hardwareMap.get(BNO055IMU.class, "imuTop");
+        imuBase.initialize(parameters);
+        imuTop.initialize(parameters);
 
 
         flDrive = hardwareMap.get(DcMotor.class, "fl");
@@ -102,7 +106,8 @@ public class MecanumYellow {
         blDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         brDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        colorSensor =hardwareMap.get(NormalizedColorSensor.class, "color");
+        colorLeft= hardwareMap.get(NormalizedColorSensor.class, "color_left");
+        colorRight=hardwareMap.get(NormalizedColorSensor.class, "color_right");
     }
 
 
@@ -132,13 +137,13 @@ public class MecanumYellow {
         brDrive.setPower(0);
     }
 
-    public double[] getColor() //returns in rgba
+    public double[] getColor(NormalizedColorSensor colorSensor) //returns in rgba
     {
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
         return new double[]{colors.red,colors.green,colors.blue,colors.alpha};
     }
 
-    public double[] getColorHSV() //returns in rgba
+    public double[] getColorHSV(NormalizedColorSensor colorSensor) //returns in rgba
     {
         float[] hsvValues = new float[3];
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
@@ -147,9 +152,10 @@ public class MecanumYellow {
     }
 
     public Orientation getIMU_ZYX(AngleUnit unit){ //heading first
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, unit);
+        Orientation angles = imuTop.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, unit);
         return angles;
     }
+
     public double getIMU_Heading(AngleUnit unit){
         return getIMU_ZYX(unit).firstAngle;
     }
@@ -162,6 +168,7 @@ public class MecanumYellow {
 
     public void vectorDrive(double r, double degrees){ //degrees corresponds to a normal unit circle
         double radians = (degrees * Math.PI)/ 180 - Math.PI/4;
+        //r *= 1.25;
         final double v1 = r * Math.cos(radians);
         final double v2 = r * Math.sin(radians);
         final double v3 = r * Math.sin(radians);

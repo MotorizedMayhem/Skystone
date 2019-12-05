@@ -84,9 +84,9 @@ public class AutoV1_BLUE extends MM_LinearOpMode {
 
         //slower color detect
         robot.vectorDrive(.2,MecanumYellow.LEFT);
-        double seenBlue = robot.getColor()[2];
-        while (seenBlue < .1 && opModeIsActive()){
-            seenBlue = robot.getColor()[2];
+        double seenBlue = robot.getColor(robot.colorLeft)[2];
+        while (seenBlue < .07 && opModeIsActive()){
+            seenBlue = robot.getColor(robot.colorLeft)[2];
             telemetry.addData("Current Blue:", seenBlue);
             telemetry.update();
         }
@@ -145,9 +145,9 @@ public class AutoV1_BLUE extends MM_LinearOpMode {
         sleep(Math.round(distance));
 
         robot.vectorDrive(.2,MecanumYellow.LEFT);
-        seenBlue = robot.getColor()[2];
-        while (seenBlue < .1 && opModeIsActive()){
-            seenBlue = robot.getColor()[2];
+        seenBlue = robot.getColor(robot.colorLeft)[2];
+        while (seenBlue < .07 && opModeIsActive()){
+            seenBlue = robot.getColor(robot.colorLeft)[2];
             telemetry.addData("Current Blue:", seenBlue);
             telemetry.update();
         }

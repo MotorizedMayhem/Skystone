@@ -67,7 +67,7 @@ public class AutoV1_RED extends MM_LinearOpMode {
         sleep(1000);
 
         //forward toward the blocks
-        robot.motor_powers(.3);
+        robot.motor_powers(.5);
         sleep(1100);
         robot.stop_motors();
         sleep(1000);
@@ -80,24 +80,24 @@ public class AutoV1_RED extends MM_LinearOpMode {
 
         //strafe toward line
         robot.vectorDrive(.6,0);
-        double distance = (blockArrangement/3.0) * 1000 + 400; //little sus
+        double distance = (blockArrangement/3.0) * 1000 + 100; //little sus
         sleep(Math.round(distance));
 
         //slower color detect
         robot.vectorDrive(.2,0);
-        double seenRed = robot.getColor()[0];
-        while (seenRed < .10 && opModeIsActive()){
-            seenRed = robot.getColor()[0];
+        double seenRed = robot.getColor(robot.colorRight)[0];
+        while (seenRed < .07&& opModeIsActive()){
+            seenRed = robot.getColor(robot.colorRight)[0];
             telemetry.addData("Current Red:", seenRed);
             telemetry.update();
         }
-        robot.vectorDrive(.4,0);
-        sleep(500);
+        robot.vectorDrive(.55,0);
+        sleep(1250);
         robot.stop_motors();
         sleep(2000); //drop off block
 
 
-        robot.vectorDrive(.65,200);//back off and go left
+        robot.vectorDrive(.8,200);//back off and go left
         sleep(2300);
 
         //TODO SQUARE UP
@@ -141,19 +141,19 @@ public class AutoV1_RED extends MM_LinearOpMode {
         sleep(200);
 
         //fast back to red
-        robot.vectorDrive(.7,0);
-        distance = ((blockArrangement/3.0) * 1000) + 1000; //little sus
+        robot.vectorDrive(.75,0);
+        distance = ((blockArrangement/3.0) * 1500) + 500; //little sus
         sleep(Math.round(distance));
 
         robot.vectorDrive(.2,0);
-        seenRed = robot.getColor()[0];
-        while (seenRed < .10 && opModeIsActive()){
-            seenRed = robot.getColor()[0];
+        seenRed = robot.getColor(robot.colorRight)[0];
+        while (seenRed < .07 && opModeIsActive()){
+            seenRed = robot.getColor(robot.colorRight)[0];
             telemetry.addData("Current Red:", seenRed);
             telemetry.update();
         }
-        robot.vectorDrive(.4,0);
-        sleep(500);
+        robot.vectorDrive(.55,0);
+        sleep(1250);
         robot.stop_motors();
         sleep(1000); //drop off block
 
