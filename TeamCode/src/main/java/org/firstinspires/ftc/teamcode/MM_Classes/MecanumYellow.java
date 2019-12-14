@@ -5,6 +5,7 @@ import android.os.ParcelFormatException;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.bosch.NaiveAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -61,6 +62,7 @@ public class MecanumYellow {
         parameters.loggingEnabled      = false;
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        parameters.accelerationIntegrationAlgorithm = new MM_AccelerationIntegrator();
 
         imuBase = hardwareMap.get(BNO055IMU.class, "imuBase");
         imuTop = hardwareMap.get(BNO055IMU.class, "imuTop");

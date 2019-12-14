@@ -49,9 +49,9 @@ import java.util.concurrent.TimeUnit;
  *
  * Displays the first pattern upon init.
  */
-@TeleOp(name="PartyCity")
+@TeleOp(name="BlinkinTest")
 @Disabled
-public class PartyCity extends OpMode {
+public class BlinkinTest extends OpMode {
 
     /*
      * Change the pattern every 10 seconds in AUTO mode.
@@ -139,6 +139,11 @@ public class PartyCity extends OpMode {
             displayPattern();
             gamepadRateLimit.reset();
         }
+        if (gamepad1.y){
+        pattern = RevBlinkinLedDriver.BlinkinPattern.HEARTBEAT_RED;
+        displayPattern();
+        gamepadRateLimit.reset();
+        }
     }
 
     protected void setDisplayKind(DisplayKind displayKind)
@@ -147,7 +152,7 @@ public class PartyCity extends OpMode {
         display.setValue(displayKind.toString());
     }
 
-    protected void doAutoDisplay()
+    protected void doAutoDisplay()                  
     {
         if (ledCycleDeadline.hasExpired()) {
             pattern = pattern.next();
