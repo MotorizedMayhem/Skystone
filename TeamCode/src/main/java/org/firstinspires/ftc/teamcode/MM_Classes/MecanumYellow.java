@@ -184,17 +184,37 @@ public class MecanumYellow {
             brDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             brDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             //should be a wait but whatever
-            frDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            flDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            brDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            brDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            frDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            flDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            brDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            brDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
+    }
+
+    public void runToPositions(int fl,int fr, int bl, int br){
+        flDrive.setTargetPosition(fl);
+        frDrive.setTargetPosition(fr);
+        blDrive.setTargetPosition(bl);
+        brDrive.setTargetPosition(br);
+        
+        flDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        blDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        brDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    
+    public void runToPositions(int distance){
+        runToPositions(distance,distance,distance,distance);
     }
 
     public double encoderAvg(){
         double total = frDrive.getCurrentPosition() + flDrive.getCurrentPosition()
                 + brDrive.getCurrentPosition() + blDrive.getCurrentPosition();
         return total/4;
+    }
+
+    public boolean motorsAreBusy(){
+        return flDrive.isBusy() || frDrive.isBusy() || blDrive.isBusy() || brDrive.isBusy();
     }
 
 }

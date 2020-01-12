@@ -66,42 +66,54 @@ public class AutoV1_RED extends MM_LinearOpMode {
         robot.stop_motors();
         sleep(1000);
 
-        //forward toward the blocks
+        //#### FORWARD TOWARD BLOCKS ####
         robot.motor_powers(.5);
         sleep(1100);
         robot.stop_motors();
         sleep(1000);
 
-        //back away after having grabbed one
+        //#### APPROACH BLOCK SLOW ####
+
+
+        //#### GRAB BLOCK #####
+
+
+        //### BACK AWAY AFTER GRAB ####
         robot.motor_powers(-.2);
         sleep(200);
         robot.stop_motors();
         sleep(200);
 
-        //strafe toward line
+        //#### STRAFE TOWARD RED LINE ####
         robot.vectorDrive(.6,0);
         double distance = (blockArrangement/3.0) * 1000 + 100; //little sus
         sleep(Math.round(distance));
 
-        //slower color detect
+        //#### STRAFE SLOW COLOR DETECT ####
         robot.vectorDrive(.2,0);
         double seenRed = robot.getColor(robot.colorRight)[0];
-        while (seenRed < .07&& opModeIsActive()){
+        while (seenRed < .07 && opModeIsActive()){
             seenRed = robot.getColor(robot.colorRight)[0];
             telemetry.addData("Current Red:", seenRed);
             telemetry.update();
         }
+
+        //#### STRAFE OVER AND CLEAR LINE ####
         robot.vectorDrive(.55,0);
         sleep(1250);
         robot.stop_motors();
         sleep(2000); //drop off block
 
+        //#### RELEASE BLOCK ####
 
+
+        //#### FAST BACK LEFT DIAGONAL ####
         robot.vectorDrive(.8,200);//back off and go left
         sleep(2300);
 
-        //TODO SQUARE UP
+        //#### POSSIBLY SQUARE UP ####
 
+        //#### STRAFE TO DETECT BLOCK ####
         robot.vectorDrive(.25,180);
         Point center = new Point (0,0); //starts us with a loop
         int targetPixel = 375;
@@ -126,13 +138,19 @@ public class AutoV1_RED extends MM_LinearOpMode {
         robot.stop_motors();
         sleep(500);
 
-        //forward toward the blocks
+        //#### FORWARD TOWARD BLOCKS ####
         robot.motor_powers(.3);
         sleep(1050);
         robot.stop_motors();
         sleep(1000);
 
-        //back away after having grabbed one
+        //#### APPROACH BLOCK SLOW ####
+
+
+        //#### GRAB BLOCK #####
+        
+
+        //#### BACK AWAY AFTER GRAB ####
         robot.motor_powers(-.2);
         sleep(500);
         robot.motor_powers(-.4);
@@ -140,11 +158,12 @@ public class AutoV1_RED extends MM_LinearOpMode {
         robot.stop_motors();
         sleep(200);
 
-        //fast back to red
+        //#### FAST STRAFE TO RED LINE ####
         robot.vectorDrive(.75,0);
         distance = ((blockArrangement/3.0) * 1500) + 500; //little sus
         sleep(Math.round(distance));
 
+        //#### STRAFE SLOW COLOR DETECT ####
         robot.vectorDrive(.2,0);
         seenRed = robot.getColor(robot.colorRight)[0];
         while (seenRed < .07 && opModeIsActive()){
@@ -152,11 +171,19 @@ public class AutoV1_RED extends MM_LinearOpMode {
             telemetry.addData("Current Red:", seenRed);
             telemetry.update();
         }
+
+        
+        
+        //#### STRAFE OVER AND CLEAR LINE ####
         robot.vectorDrive(.55,0);
         sleep(1250);
         robot.stop_motors();
         sleep(1000); //drop off block
 
+        //#### RELEASE BLOCK ####
+        
+
+        //#### STRAFE BACK OVER RED LINE ####
         robot.vectorDrive(.4, 180);
         sleep(500);
         robot.stop_motors();
