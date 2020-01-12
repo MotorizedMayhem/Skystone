@@ -77,6 +77,7 @@ public class OpenCVLoopRed extends MM_LinearOpMode {
             telemetry.addData("block arrangement", blockArrangement.name()); //see if name is necessary
             telemetry.update();
         }
+        //super.end();
     }
     enum Arrangement{
         NONE,

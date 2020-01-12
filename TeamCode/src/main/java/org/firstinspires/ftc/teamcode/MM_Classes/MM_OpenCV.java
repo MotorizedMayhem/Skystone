@@ -156,9 +156,11 @@ public class MM_OpenCV {
         return CropMat(in, 300, 400);
     }
     public static Mat CropMatWebcam(Mat in){
-        return CropMat(in, 175, 300); //was 325
+        return CropMat(in, 240, 360); //was 175,300
     }
-    public static Mat CropMatWebcamBlue(Mat in){return CropMatBlue(in, 175, 300);}
+    public static Mat CropMatWebcamBlue(Mat in){
+        return CropMatBlue(in, 240, 385); //was 175,300
+    }
 
     public static Mat Morphology(Mat img){
         Mat output = new Mat(img.size(), img.type()); //creates output like input

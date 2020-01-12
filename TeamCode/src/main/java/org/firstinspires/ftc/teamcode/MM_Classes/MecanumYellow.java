@@ -32,6 +32,10 @@ public class MecanumYellow {
     public DcMotor frDrive;
     public DcMotor blDrive;
     public DcMotor brDrive;
+    public DcMotor lift;
+    public DcMotor extend;
+    public double LiftPosit;
+    public double ExtendPosit;
 
     //Dual Imu
     public BNO055IMU imuBase;
@@ -64,8 +68,8 @@ public class MecanumYellow {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         parameters.accelerationIntegrationAlgorithm = new MM_AccelerationIntegrator();
 
-        imuBase = hardwareMap.get(BNO055IMU.class, "imuBase");
-        imuTop = hardwareMap.get(BNO055IMU.class, "imuTop");
+        imuBase = hardwareMap.get(BNO055IMU.class, "imu_base");
+        imuTop = hardwareMap.get(BNO055IMU.class, "imu_top");
         imuBase.initialize(parameters);
         imuTop.initialize(parameters);
 
@@ -74,6 +78,8 @@ public class MecanumYellow {
         frDrive = hardwareMap.get(DcMotor.class, "fr");
         blDrive = hardwareMap.get(DcMotor.class, "bl");
         brDrive = hardwareMap.get(DcMotor.class, "br");
+        lift    = hardwareMap.get(DcMotor.class, "lift");
+        extend  = hardwareMap.get(DcMotor.class, "extend");
         //channel end forward
 
         flDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -107,6 +113,15 @@ public class MecanumYellow {
         frDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         blDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         brDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        extend.setDirection(DcMotor.Direction.FORWARD);
+        extend.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        lift.setDirection(DcMotor.Direction.FORWARD);
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        LiftPosit   = lift.getCurrentPosition();
+        ExtendPosit = extend.getCurrentPosition();
 
         colorLeft= hardwareMap.get(NormalizedColorSensor.class, "color_left");
         colorRight=hardwareMap.get(NormalizedColorSensor.class, "color_right");
