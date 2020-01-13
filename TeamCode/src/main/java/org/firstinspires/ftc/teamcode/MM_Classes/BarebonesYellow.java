@@ -1,23 +1,10 @@
 package org.firstinspires.ftc.teamcode.MM_Classes;
 
-import android.graphics.Color;
-
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class MecanumYellow {
+public class BarebonesYellow {
     private final static int LED_PERIOD = 1;
 
     //Rate limit gamepad button presses to every 500ms
@@ -31,63 +18,17 @@ public class MecanumYellow {
     public DcMotor brDrive;
     public DcMotor lift;
     public DcMotor extend;
-    public double LiftPosit;
-    public double ExtendPosit;
-
-    Servo           MServo;
-    Servo           LServo;
-    Servo           RServo;
-    Servo           FServo;
-
-    RevBlinkinLedDriver blinkinLedDriver;
-    RevBlinkinLedDriver.BlinkinPattern pattern;
-
-    //Dual Imu
-    public BNO055IMU imuBase;
-    public BNO055IMU imuTop;
-    // State used for updating telemetry
-    private Orientation angles;
-    private Acceleration gravity;
-    //Used for Color Sensor
-    public NormalizedColorSensor colorLeft;
-    public NormalizedColorSensor colorRight;
-
 
     private HardwareMap hardwareMap;
 
-    public MecanumYellow(boolean closedLoopEncoder) {
+    public BarebonesYellow(boolean closedLoopEncoder) {
         this.closedLoopEncoder = closedLoopEncoder;
     }
-    public MecanumYellow(){this(false);} //default dont use them
+    public BarebonesYellow(){this(false);} //default dont use them
 
 
     public void init(HardwareMap hwMap){
         hardwareMap = hwMap;
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = false;
-        parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        //parameters.accelerationIntegrationAlgorithm = new MM_AccelerationIntegrator();
-
-        imuBase = hardwareMap.get(BNO055IMU.class, "imu_base");
-        imuTop = hardwareMap.get(BNO055IMU.class, "imu_top");
-        imuBase.initialize(parameters);
-        imuTop.initialize(parameters);
-
-        LServo = hardwareMap.servo.get("Lservo");
-        MServo = hardwareMap.servo.get("Mservo");
-        RServo = hardwareMap.servo.get("Rservo");
-        FServo = hardwareMap.servo.get("servo");
-
-        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "Blinky");
-        pattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
-        blinkinLedDriver.setPattern(pattern);
-
-
-
 
         flDrive = hardwareMap.get(DcMotor.class, "fl");
         frDrive = hardwareMap.get(DcMotor.class, "fr");
@@ -134,12 +75,6 @@ public class MecanumYellow {
 
         lift.setDirection(DcMotor.Direction.FORWARD);
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        LiftPosit   = lift.getCurrentPosition();
-        ExtendPosit = extend.getCurrentPosition();
-
-        colorLeft= hardwareMap.get(NormalizedColorSensor.class, "color_left");
-        colorRight=hardwareMap.get(NormalizedColorSensor.class, "color_right");
     }
 
 
@@ -154,8 +89,8 @@ public class MecanumYellow {
     }
 
     public final static int
-        COUNTERCLOCKWISE = -1,
-        CLOCKWISE = 1;
+            COUNTERCLOCKWISE = -1,
+            CLOCKWISE = 1;
 
     public void rotate(double power, int direction){
         double left = power * direction;
@@ -169,34 +104,11 @@ public class MecanumYellow {
         brDrive.setPower(0);
     }
 
-    public double[] getColor(NormalizedColorSensor colorSensor) //returns in rgba
-    {
-        NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        return new double[]{colors.red,colors.green,colors.blue,colors.alpha};
-    }
-
-    public double[] getColorHSV(NormalizedColorSensor colorSensor) //returns in rgba
-    {
-        float[] hsvValues = new float[3];
-        NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        Color.colorToHSV(colors.toColor(), hsvValues);
-        return new double[]{hsvValues[0],hsvValues[1],hsvValues[2]};
-    }
-
-    public Orientation getIMU_ZYX(AngleUnit unit){ //heading first
-        Orientation angles = imuTop.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, unit);
-        return angles;
-    }
-
-    public double getIMU_Heading(AngleUnit unit){
-        return getIMU_ZYX(unit).firstAngle;
-    }
-
     public final static double
-        LEFT = 180,
-        FORWARD = 90,
-        RIGHT = 0,
-        BACKWARD = 270;
+            LEFT = 180,
+            FORWARD = 90,
+            RIGHT = 0,
+            BACKWARD = 270;
 
     public void vectorDrive(double r, double degrees){ //degrees corresponds to a normal unit circle
         double radians = (degrees * Math.PI)/ 180 - Math.PI/4;
@@ -219,7 +131,6 @@ public class MecanumYellow {
             blDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
         else {
-            //should be a wait but whatever
             frDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             flDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             brDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -232,13 +143,13 @@ public class MecanumYellow {
         frDrive.setTargetPosition(fr);
         blDrive.setTargetPosition(bl);
         brDrive.setTargetPosition(br);
-        
+
         flDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         frDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         blDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         brDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
-    
+
     public void runToPositions(int distance){
         runToPositions(distance,distance,distance,distance);
     }
