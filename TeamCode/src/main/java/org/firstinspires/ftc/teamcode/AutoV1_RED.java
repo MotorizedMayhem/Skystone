@@ -4,8 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_LinearOpMode;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_OpenCV;
-import org.firstinspires.ftc.teamcode.MM_Classes.MM_Vuforia;
-import org.firstinspires.ftc.teamcode.MM_Classes.MecanumYellow;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -28,7 +26,7 @@ public class AutoV1_RED extends MM_LinearOpMode {
         Mat colorImg = openCV.getFrames();
         Mat contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
         List<MatOfPoint> contours = MM_OpenCV.findContours(contourable);
-        Mat croppedColor = openCV.CropMat(colorImg);
+        Mat croppedColor = openCV.CropMatRed(colorImg);
         Mat finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
         MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
         int blockArrangement = MM_OpenCV.NONE;
@@ -57,19 +55,19 @@ public class AutoV1_RED extends MM_LinearOpMode {
                 colorImg = openCV.getFrames();
                 contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
                 contours = MM_OpenCV.findContours(contourable);
-                croppedColor = openCV.CropMat(colorImg);
+                croppedColor = openCV.CropMatRed(colorImg);
                 finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
                 MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
                 center = MM_OpenCV.findCenterOfLargest(contours);
             }
         }
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(1000);
 
         //#### FORWARD TOWARD BLOCKS ####
-        robot.motor_powers(.5);
+        robot.motorPowers(.5);
         sleep(1100);
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(1000);
 
         //#### APPROACH BLOCK SLOW ####
@@ -79,9 +77,9 @@ public class AutoV1_RED extends MM_LinearOpMode {
 
 
         //### BACK AWAY AFTER GRAB ####
-        robot.motor_powers(-.2);
+        robot.motorPowers(-.2);
         sleep(200);
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(200);
 
         //#### STRAFE TOWARD RED LINE ####
@@ -101,7 +99,7 @@ public class AutoV1_RED extends MM_LinearOpMode {
         //#### STRAFE OVER AND CLEAR LINE ####
         robot.vectorDrive(.55,0);
         sleep(1250);
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(2000); //drop off block
 
         //#### RELEASE BLOCK ####
@@ -122,7 +120,7 @@ public class AutoV1_RED extends MM_LinearOpMode {
             colorImg = openCV.getFrames();
             contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
             contours = MM_OpenCV.findContours(contourable);
-            croppedColor = openCV.CropMat(colorImg);
+            croppedColor = openCV.CropMatRed(colorImg);
             finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
             MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
             if (contours.size() != 0) {
@@ -135,13 +133,13 @@ public class AutoV1_RED extends MM_LinearOpMode {
 
         }
 
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(500);
 
         //#### FORWARD TOWARD BLOCKS ####
-        robot.motor_powers(.3);
+        robot.motorPowers(.3);
         sleep(1050);
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(1000);
 
         //#### APPROACH BLOCK SLOW ####
@@ -151,11 +149,11 @@ public class AutoV1_RED extends MM_LinearOpMode {
         
 
         //#### BACK AWAY AFTER GRAB ####
-        robot.motor_powers(-.2);
+        robot.motorPowers(-.2);
         sleep(500);
-        robot.motor_powers(-.4);
+        robot.motorPowers(-.4);
         sleep(500);
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(200);
 
         //#### FAST STRAFE TO RED LINE ####
@@ -177,7 +175,7 @@ public class AutoV1_RED extends MM_LinearOpMode {
         //#### STRAFE OVER AND CLEAR LINE ####
         robot.vectorDrive(.55,0);
         sleep(1250);
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(1000); //drop off block
 
         //#### RELEASE BLOCK ####
@@ -186,7 +184,7 @@ public class AutoV1_RED extends MM_LinearOpMode {
         //#### STRAFE BACK OVER RED LINE ####
         robot.vectorDrive(.4, 180);
         sleep(500);
-        robot.stop_motors();
+        robot.stopMotors();
         end();
 
 

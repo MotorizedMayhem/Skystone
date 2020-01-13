@@ -49,7 +49,7 @@ public class OpenCVLoopBlue extends MM_LinearOpMode {
             //Mat contourable = openCV.ProcessImg(colorImg, threshold);
             List<MatOfPoint> contours = MM_OpenCV.findContours(contourable);
             Mat croppedColor = MM_OpenCV.CropMatBlue(colorImg, topOff,leftOff);
-            //Mat croppedColor = openCV.CropMat(colorImg);
+            //Mat croppedColor = openCV.CropMatRed(colorImg);
             Mat finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
             MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
             Arrangement blockArrangement = Arrangement.NONE;

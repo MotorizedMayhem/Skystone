@@ -143,10 +143,10 @@ public class MecanumYellow {
     }
 
 
-    public void motor_powers(double power){
-        motor_powers(power,power,power,power);
+    public void motorPowers(double power){
+        motorPowers(power,power,power,power);
     }
-    public void motor_powers(double fl, double fr, double bl, double br){
+    public void motorPowers(double fl, double fr, double bl, double br){
         flDrive.setPower(fl);
         frDrive.setPower(fr);
         blDrive.setPower(bl);
@@ -160,9 +160,9 @@ public class MecanumYellow {
     public void rotate(double power, int direction){
         double left = power * direction;
         double right = power * -direction;
-        motor_powers(left,right,left,right);
+        motorPowers(left,right,left,right);
     }
-    public void stop_motors(){
+    public void stopMotors(){
         flDrive.setPower(0);
         frDrive.setPower(0);
         blDrive.setPower(0);
@@ -205,7 +205,7 @@ public class MecanumYellow {
         final double v2 = r * Math.sin(radians);
         final double v3 = r * Math.sin(radians);
         final double v4 = r * Math.cos(radians);
-        motor_powers(v1,v2,v3,v4);
+        motorPowers(v1,v2,v3,v4);
     }
     public void resetEncoders(){
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

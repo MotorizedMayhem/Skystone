@@ -48,8 +48,8 @@ public class OpenCVLoopRed extends MM_LinearOpMode {
             Mat contourable = MM_OpenCV.ProcessImg(colorImg, threshold, topOff, rightOff);
             //Mat contourable = openCV.ProcessImg(colorImg, threshold);
             List<MatOfPoint> contours = MM_OpenCV.findContours(contourable);
-            Mat croppedColor = MM_OpenCV.CropMat(colorImg, topOff,rightOff);
-            //Mat croppedColor = openCV.CropMat(colorImg);
+            Mat croppedColor = MM_OpenCV.CropMatRed(colorImg, topOff,rightOff);
+            //Mat croppedColor = openCV.CropMatRed(colorImg);
             Mat finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
             MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
             Arrangement blockArrangement = Arrangement.NONE;

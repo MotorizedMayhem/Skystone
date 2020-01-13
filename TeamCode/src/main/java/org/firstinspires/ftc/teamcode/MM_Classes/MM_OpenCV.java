@@ -11,7 +11,6 @@ import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import org.opencv.android.OpenCVLoader;
@@ -132,7 +131,7 @@ public class MM_OpenCV {
         return img;
 
     }
-    public static Mat CropMat(Mat in, int offTop, int offRight){
+    public static Mat CropMatRed(Mat in, int offTop, int offRight){
         Rect roi = new Rect(new Point(0,offTop), new Point(in.width() - offRight,in.height()));
         return in.submat(roi).clone();
     }
@@ -140,9 +139,9 @@ public class MM_OpenCV {
         Rect roi = new Rect(new Point(offLeft,offTop), new Point(in.width(),in.height()));
         return in.submat(roi).clone();
     }
-    public Mat CropMat(Mat in){
+    public Mat CropMatRed(Mat in){
         if (USE_WEBCAM){
-            return CropMatWebcam(in);
+            return CropMatWebcamRed(in);
         }
         else{
             return CropMatPhone(in);
@@ -153,10 +152,10 @@ public class MM_OpenCV {
     }
 
     public static Mat CropMatPhone(Mat in){
-        return CropMat(in, 300, 400);
+        return CropMatRed(in, 300, 400);
     }
-    public static Mat CropMatWebcam(Mat in){
-        return CropMat(in, 240, 360); //was 175,300
+    public static Mat CropMatWebcamRed(Mat in){
+        return CropMatRed(in, 240, 360); //was 175,300
     }
     public static Mat CropMatWebcamBlue(Mat in){
         return CropMatBlue(in, 240, 385); //was 175,300
@@ -186,7 +185,7 @@ public class MM_OpenCV {
 
     public static Mat ProcessImg(Mat colorImg, int threshold, int offTop, int offRight){
         Mat toBeProcessed = colorImg.clone();
-        return Morphology(Threshold(CropMat(toBeProcessed, offTop, offRight), threshold));
+        return Morphology(Threshold(CropMatRed(toBeProcessed, offTop, offRight), threshold));
     }
     public static Mat ProcessImgBlue(Mat colorImg, int threshold, int offTop, int offLeft){
         Mat toBeProcessed = colorImg.clone();
@@ -195,7 +194,7 @@ public class MM_OpenCV {
 
     public Mat ProcessImg(Mat colorImg, int threshold){
         Mat toBeProcessed = colorImg.clone();
-        if (USE_WEBCAM){return Morphology(Threshold(CropMatWebcam(toBeProcessed), threshold));}
+        if (USE_WEBCAM){return Morphology(Threshold(CropMatWebcamRed(toBeProcessed), threshold));}
         else {return Morphology(Threshold(CropMatPhone(toBeProcessed), threshold));}
     }
     public Mat ProcessImgBlue(Mat colorImg, int threshold){

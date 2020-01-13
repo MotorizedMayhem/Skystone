@@ -62,19 +62,19 @@ public class AutoV1_BLUE extends MM_LinearOpMode {
                 center = MM_OpenCV.findCenterOfLargest(contours);
             }
         }
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(1000);
 
         //forward toward the blocks
-        robot.motor_powers(.3);
+        robot.motorPowers(.3);
         sleep(1100);
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(1000);
 
         //back away after having grabbed one
-        robot.motor_powers(-.2);
+        robot.motorPowers(-.2);
         sleep(200);
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(200);
 
         //strafe toward line
@@ -92,7 +92,7 @@ public class AutoV1_BLUE extends MM_LinearOpMode {
         }
         robot.vectorDrive(.4,MecanumYellow.LEFT);
         sleep(1250);
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(2000); //drop off block
 
 
@@ -122,21 +122,21 @@ public class AutoV1_BLUE extends MM_LinearOpMode {
 
         }
 
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(500);
 
         //forward toward the blocks
-        robot.motor_powers(.3);
+        robot.motorPowers(.3);
         sleep(900);
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(1000);
 
         //back away after having grabbed one
-        robot.motor_powers(-.2);
+        robot.motorPowers(-.2);
         sleep(500);
-        robot.motor_powers(-.4);
+        robot.motorPowers(-.4);
         sleep(500);
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(200);
 
         //fast back to blue
@@ -153,12 +153,12 @@ public class AutoV1_BLUE extends MM_LinearOpMode {
         }
         robot.vectorDrive(.4,MecanumYellow.LEFT);
         sleep(1250);
-        robot.stop_motors();
+        robot.stopMotors();
         sleep(1000); //drop off block
 
         robot.vectorDrive(.4, MecanumYellow.RIGHT);
         sleep(500);
-        robot.stop_motors();
+        robot.stopMotors();
         end();
 
 

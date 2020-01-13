@@ -28,7 +28,7 @@ public class Iterative_BasicDrive extends MM_IterativeOpMode {
         final double v2 = r * Math.sin(radians) + turn;
         final double v3 = r * Math.sin(radians) - turn;
         final double v4 = r * Math.cos(radians) + turn;
-        robot.motor_powers(v1, v2, v3, v4);
+        robot.motorPowers(v1, v2, v3, v4);
         telemetry.addData("Steering","Mag: %.2f, Theta: %.1f deg", r, (radians*180)/Math.PI);
         telemetry.addData("Motor Powers", "fl: %.3f, fr: %.3f, br: %.3f, bl: %.3f", v1,v2,v3,v4);
         telemetry.addData("Scalar value", scalar);
