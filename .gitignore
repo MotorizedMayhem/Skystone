@@ -23,6 +23,6 @@ Thumbs.db
 .idea
 .gradle
 build/
-
+externalNativeBuild/
 *ASUS_PC_01*
 
