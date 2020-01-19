@@ -26,8 +26,8 @@ public class OpenCVLoopBlue extends MM_LinearOpMode {
 
         waitForStart();
         int threshold = 20;
-        int leftOff = 300;
-        int topOff = 175;
+        int leftOff = 385;
+        int topOff = 240;
         while (opModeIsActive()) {
             Mat colorImg = openCV.getFrames();
             if (gamepad1.dpad_up){

@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity
 
 public abstract class MM_LinearOpMode extends LinearOpMode {
     //MecanumChassis2019 robot = new MecanumChassis2019();
-    public MecanumYellow robot = new MecanumYellow();
+    public MecanumYellow robot = new MecanumYellow(true);
     public MM_Vuforia vuforia = new MM_Vuforia();
     public MM_OpenCV openCV = new MM_OpenCV(MM_Vuforia.USE_WEBCAM);
     public boolean openCVStartup;

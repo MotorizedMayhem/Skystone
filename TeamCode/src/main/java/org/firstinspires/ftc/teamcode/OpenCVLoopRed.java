@@ -26,8 +26,8 @@ public class OpenCVLoopRed extends MM_LinearOpMode {
 
         waitForStart();
         int threshold = 25;
-        int rightOff = 325;
-        int topOff = 175;
+        int rightOff = 360;
+        int topOff = 240;
         while (opModeIsActive()) {
             Mat colorImg = openCV.getFrames();
             if (gamepad1.dpad_up){

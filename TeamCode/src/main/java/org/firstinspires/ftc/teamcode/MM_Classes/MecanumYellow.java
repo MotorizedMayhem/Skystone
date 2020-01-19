@@ -34,10 +34,10 @@ public class MecanumYellow {
     public double LiftPosit;
     public double ExtendPosit;
 
-    Servo           MServo;
-    Servo           LServo;
-    Servo           RServo;
-    Servo           FServo;
+    public Servo           MServo;
+    public Servo           LServo;
+    public Servo           RServo;
+    public Servo           FServo;
 
     RevBlinkinLedDriver blinkinLedDriver;
     RevBlinkinLedDriver.BlinkinPattern pattern;
@@ -80,7 +80,7 @@ public class MecanumYellow {
         LServo = hardwareMap.servo.get("Lservo");
         MServo = hardwareMap.servo.get("Mservo");
         RServo = hardwareMap.servo.get("Rservo");
-        FServo = hardwareMap.servo.get("servo");
+        FServo = hardwareMap.servo.get("Sservo");
 
         blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "Blinky");
         pattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
@@ -211,7 +211,7 @@ public class MecanumYellow {
         frDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         brDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        brDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        blDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         if (closedLoopEncoder) {
             flDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             frDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -223,7 +223,7 @@ public class MecanumYellow {
             frDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             flDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             brDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            brDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            blDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
 

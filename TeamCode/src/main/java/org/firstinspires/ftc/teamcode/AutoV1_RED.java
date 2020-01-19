@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_LinearOpMode;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_OpenCV;
 import org.opencv.core.Mat;
@@ -22,6 +24,26 @@ public class AutoV1_RED extends MM_LinearOpMode {
         openCV.THRESHOLD = 25;
         telemetry.update();
         waitForStart();
+
+        int ExtendPosit = -2450;
+        int LiftPosit = -575; //525
+        robot.lift.setPower(1);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition((int)LiftPosit);
+
+        robot.extend.setPower(1);
+        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extend.setTargetPosition((int)ExtendPosit);
+
+
+        //#### FORWARD TOWARD BLOCKS ####
+        encoderForward(500,.3);
+
+        //#### OPEN CLAW TO ATTACK ####
+        robot.LServo.setPosition(1);
+        robot.MServo.setPosition(0.5);
+        robot.RServo.setPosition(1);
+
 
         Mat colorImg = openCV.getFrames();
         Mat contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
@@ -49,9 +71,9 @@ public class AutoV1_RED extends MM_LinearOpMode {
         telemetry.addData("arrangement", blockArrangement);
         telemetry.update();
         if (blockArrangement != MM_OpenCV.NONE){ //maybe was right
-            robot.vectorDrive(0.25, 180);
+            robot.vectorDrive(0.2, 180);
             Point center = MM_OpenCV.findCenterOfLargest(contours);
-            while (center.x < 375 && opModeIsActive()){
+            while (center.x < 390 && opModeIsActive()){
                 colorImg = openCV.getFrames();
                 contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
                 contours = MM_OpenCV.findContours(contourable);
@@ -61,60 +83,125 @@ public class AutoV1_RED extends MM_LinearOpMode {
                 center = MM_OpenCV.findCenterOfLargest(contours);
             }
         }
+        encoderStrafeRight(160,-.2);
         robot.stopMotors();
-        sleep(1000);
+        /*
+        //sleep(250);
+        ExtendPosit = -2450;
+        LiftPosit = -575; //525
+        robot.lift.setPower(1);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition((int)LiftPosit);
+
+        robot.extend.setPower(1);
+        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extend.setTargetPosition((int)ExtendPosit);
+
 
         //#### FORWARD TOWARD BLOCKS ####
-        robot.motorPowers(.5);
-        sleep(1100);
-        robot.stopMotors();
-        sleep(1000);
+        encoderForward(500,.3);
+
+        //#### OPEN CLAW TO ATTACK ####
+        robot.LServo.setPosition(1);
+        robot.MServo.setPosition(0.5);
+        robot.RServo.setPosition(1);
+
+        */
+        //#### FINISH FAST FORWARD ####
+        encoderForward(750,0.25);
 
         //#### APPROACH BLOCK SLOW ####
-
+        encoderForward(400,.15);
+        robot.motorPowers(0);
 
         //#### GRAB BLOCK #####
+        robot.LServo.setPosition(0.3);
+        robot.MServo.setPosition(0.5);
+        robot.RServo.setPosition(1);
+
+        //#### RETRACT ARM ####
+        LiftPosit = -250;
+        ExtendPosit = -200;
+
+        robot.lift.setPower(1);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition((int)LiftPosit);
+
+        robot.extend.setPower(1);
+        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extend.setTargetPosition((int)ExtendPosit);
 
 
         //### BACK AWAY AFTER GRAB ####
-        robot.motorPowers(-.2);
-        sleep(200);
-        robot.stopMotors();
-        sleep(200);
+        encoderForward(550,-0.35);
+        robot.motorPowers(0);
 
-        //#### STRAFE TOWARD RED LINE ####
-        robot.vectorDrive(.6,0);
-        double distance = (blockArrangement/3.0) * 1000 + 100; //little sus
-        sleep(Math.round(distance));
+        //#### SQUARE UP ####
+        squareUp(0,.2);
+
+        //#### STRAFE TOWARD RED LINE AND CLEAR ####
+        encoderStrafeRight(3000,.45);
+//        double distance = (blockArrangement/3.0) * 1000 + 100; //little sus
+//        sleep(Math.round(distance));
 
         //#### STRAFE SLOW COLOR DETECT ####
-        robot.vectorDrive(.2,0);
-        double seenRed = robot.getColor(robot.colorRight)[0];
-        while (seenRed < .07 && opModeIsActive()){
-            seenRed = robot.getColor(robot.colorRight)[0];
-            telemetry.addData("Current Red:", seenRed);
-            telemetry.update();
-        }
+//        robot.vectorDrive(.2,0);
+//        double seenRed = robot.getColor(robot.colorRight)[0];
+//        while (seenRed < .07 && opModeIsActive()){
+//            seenRed = robot.getColor(robot.colorRight)[0];
+//            telemetry.addData("Current Red:", seenRed);
+//            telemetry.update();
+//        }
 
-        //#### STRAFE OVER AND CLEAR LINE ####
-        robot.vectorDrive(.55,0);
-        sleep(1250);
-        robot.stopMotors();
-        sleep(2000); //drop off block
+        //#### SQUARE UP ####
+        squareUp(0,.2);
+
 
         //#### RELEASE BLOCK ####
+        ExtendPosit = -2650;
+        LiftPosit = -950;
+        robot.lift.setPower(1);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition((int)LiftPosit);
 
+        robot.extend.setPower(1);
+        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extend.setTargetPosition((int)ExtendPosit);
+
+        robot.LServo.setPosition(1);
+        robot.MServo.setPosition(0.5);
+        robot.RServo.setPosition(1);
+        sleep(250);
+
+
+        //#### BACK AWAY FROM BLOCK ####
+        encoderForward(650,-0.40);
+        robot.motorPowers(0);
+
+        LiftPosit = -50;
+        ExtendPosit = -200;
+
+        robot.lift.setPower(1);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition((int)LiftPosit);
+
+        robot.extend.setPower(1);
+        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extend.setTargetPosition((int)ExtendPosit);
+        sleep(250);
 
         //#### FAST BACK LEFT DIAGONAL ####
-        robot.vectorDrive(.8,200);//back off and go left
-        sleep(2300);
+        robot.vectorDrive(.85,205);//back off and go left
+        waitEncoderAvg(3500);
 
         //#### POSSIBLY SQUARE UP ####
+        squareUp(0, .2);
+
 
         //#### STRAFE TO DETECT BLOCK ####
         robot.vectorDrive(.25,180);
         Point center = new Point (0,0); //starts us with a loop
-        int targetPixel = 375;
+        int targetPixel = 390;
         if (blockArrangement == MM_OpenCV.LEFT){targetPixel = 300;} //TODO 150 is too little, check 300
         while (center.x < targetPixel && opModeIsActive()){
             colorImg = openCV.getFrames();
@@ -132,61 +219,154 @@ public class AutoV1_RED extends MM_LinearOpMode {
             }
 
         }
-
+        encoderStrafeRight(160,-.2);
         robot.stopMotors();
-        sleep(500);
+        //sleep(250);
+
+        //#### RAISE CLAW TO ATTACK ####
+        ExtendPosit = -2450;
+        LiftPosit = -555;
+        robot.lift.setPower(1);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition((int)LiftPosit);
+
+        robot.extend.setPower(1);
+        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extend.setTargetPosition((int)ExtendPosit);
 
         //#### FORWARD TOWARD BLOCKS ####
-        robot.motorPowers(.3);
-        sleep(1050);
-        robot.stopMotors();
-        sleep(1000);
+        encoderForward(400,0.30);
+
+        //#### OPEN CLAW TO ATTACK ####
+        robot.LServo.setPosition(1);
+        robot.MServo.setPosition(0.5);
+        robot.RServo.setPosition(1);
+
+        //#### FINISH FAST FORWARD ####
+        encoderForward(750,0.30);
+
 
         //#### APPROACH BLOCK SLOW ####
+        encoderForward(400,0.2);
+        robot.motorPowers(0);
 
 
         //#### GRAB BLOCK #####
-        
+        robot.LServo.setPosition(0.3);
+        robot.MServo.setPosition(0.5);
+        robot.RServo.setPosition(1);
+
+        //#### RETRACT ARM ####
+        LiftPosit = -250;
+        ExtendPosit = -200;
+
+        robot.lift.setPower(1);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition((int)LiftPosit);
+
+        robot.extend.setPower(1);
+        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extend.setTargetPosition((int)ExtendPosit);
+        sleep(500);
+
 
         //#### BACK AWAY AFTER GRAB ####
-        robot.motorPowers(-.2);
-        sleep(500);
-        robot.motorPowers(-.4);
-        sleep(500);
+        encoderForward(1000,-0.30);
+        robot.motorPowers(0);
+
+        //#### SQUARE UP ####
+        squareUp(0,.2);
+
+        //#### FAST STRAFE TO RED LINE AND CLEAR ####
+        encoderStrafeRight(5000,.75);
+        robot.motorPowers(0);
+
+        //TODO
         robot.stopMotors();
-        sleep(200);
-
-        //#### FAST STRAFE TO RED LINE ####
-        robot.vectorDrive(.75,0);
-        distance = ((blockArrangement/3.0) * 1500) + 500; //little sus
-        sleep(Math.round(distance));
-
-        //#### STRAFE SLOW COLOR DETECT ####
-        robot.vectorDrive(.2,0);
-        seenRed = robot.getColor(robot.colorRight)[0];
-        while (seenRed < .07 && opModeIsActive()){
-            seenRed = robot.getColor(robot.colorRight)[0];
-            telemetry.addData("Current Red:", seenRed);
-            telemetry.update();
-        }
-
-        
-        
-        //#### STRAFE OVER AND CLEAR LINE ####
-        robot.vectorDrive(.55,0);
-        sleep(1250);
-        robot.stopMotors();
-        sleep(1000); //drop off block
+        while(opModeIsActive()){reportMotors();}
 
         //#### RELEASE BLOCK ####
-        
+        ExtendPosit = -2450;
+        LiftPosit = -800;
+        robot.lift.setPower(1);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition((int)LiftPosit);
+
+        robot.extend.setPower(1);
+        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extend.setTargetPosition((int)ExtendPosit);
+
+        robot.LServo.setPosition(1);
+        robot.MServo.setPosition(0.5);
+        robot.RServo.setPosition(1);
+        sleep(250);
+
+        //#### BACK AWAY FROM BLOCK ####
+        encoderForward(350,-0.40);
+        robot.motorPowers(0);
+
+        LiftPosit = -50;
+        ExtendPosit = -200;
+
+        robot.lift.setPower(1);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition((int)LiftPosit);
+
+        robot.extend.setPower(1);
+        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extend.setTargetPosition((int)ExtendPosit);
+        sleep(250);
+
+        //#### BACK AWAY AFTER DROP ####
+        encoderForward(500,-0.40);
+        robot.motorPowers(0);
 
         //#### STRAFE BACK OVER RED LINE ####
-        robot.vectorDrive(.4, 180);
-        sleep(500);
-        robot.stopMotors();
+        encoderStrafeRight(1500,-.7);
+
         end();
 
+    }
+    private void reportMotors(){
+        telemetry.addData("fl",robot.flDrive.getCurrentPosition());
+        telemetry.addData("fr",robot.frDrive.getCurrentPosition());
+        telemetry.addData("bl",robot.blDrive.getCurrentPosition());
+        telemetry.addData("br",robot.brDrive.getCurrentPosition());
+        telemetry.update();
+    }
+    private void encoderForward(int distance, double power){
+        robot.resetEncoders();
+        robot.motorPowers(power);
+        while(robot.encoderAvg() < distance && opModeIsActive()){
+            reportMotors();
+        }
 
+    }
+    private void encoderStrafeRight(int distance, double power){
+        robot.resetEncoders();
+        robot.motorPowers(power,-power,-power,power);
+        while(robot.encoderAvg() < distance && opModeIsActive()){
+            reportMotors();
+        }
+    }
+    private void waitEncoderAvg(int distance){
+        robot.resetEncoders();
+        while(robot.encoderAvg() < distance && opModeIsActive()){
+            reportMotors();
+        }
+    }
+    private void squareUp(double angle, double power){
+        double diff = robot.getIMU_Heading(AngleUnit.DEGREES) - angle;
+        if (diff > 0){
+            robot.rotate(power, robot.COUNTERCLOCKWISE);
+        }
+        else if (diff < 0){
+            robot.rotate(power, robot.CLOCKWISE);
+        }
+        while(Math.abs(diff) > 1.5){
+            diff = robot.getIMU_Heading(AngleUnit.DEGREES) - angle;
+        }
+        robot.stopMotors();
+        return;
     }
 }
