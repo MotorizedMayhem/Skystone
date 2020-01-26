@@ -15,12 +15,13 @@ import java.util.List;
 
 @Autonomous(name = "Auto RED", group = "Depot")
 public class AutoV1_RED extends MM_LinearOpMode {
-
+int forward_addition = 0;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
+        robot.FServo.setPosition(.6);
         openCV.THRESHOLD = 25;
         telemetry.update();
         waitForStart();
@@ -31,13 +32,11 @@ public class AutoV1_RED extends MM_LinearOpMode {
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.lift.setTargetPosition((int)LiftPosit);
 
-        robot.extend.setPower(1);
+        robot.extend.setPower(.75);
         robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.extend.setTargetPosition((int)ExtendPosit);
 
 
-        //#### FORWARD TOWARD BLOCKS ####
-        encoderForward(500,.3);
 
         //#### OPEN CLAW TO ATTACK ####
         robot.LServo.setPosition(1);
@@ -61,15 +60,22 @@ public class AutoV1_RED extends MM_LinearOpMode {
             //sleep(2000);
             if (scaledXCenter < 0.33) {
                 blockArrangement = MM_OpenCV.LEFT;
+                forward_addition =600;
             } else if (scaledXCenter < 0.66) //valid bc we already checked the first
             {
                 blockArrangement = MM_OpenCV.CENTER;
+                forward_addition =300;
             } else if (scaledXCenter >= 0.66) { //dont use else in case something rlly messed up
                 blockArrangement = MM_OpenCV.RIGHT;
             }
         }
         telemetry.addData("arrangement", blockArrangement);
         telemetry.update();
+
+
+        //#### FORWARD TOWARD BLOCKS ####
+        encoderForward(500,.3);
+
         if (blockArrangement != MM_OpenCV.NONE){ //maybe was right
             robot.vectorDrive(0.2, 180);
             Point center = MM_OpenCV.findCenterOfLargest(contours);
@@ -83,36 +89,18 @@ public class AutoV1_RED extends MM_LinearOpMode {
                 center = MM_OpenCV.findCenterOfLargest(contours);
             }
         }
-        encoderStrafeRight(160,-.2);
+        encoderStrafeRight(150,-.2);
         robot.stopMotors();
-        /*
-        //sleep(250);
-        ExtendPosit = -2450;
-        LiftPosit = -575; //525
-        robot.lift.setPower(1);
-        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.lift.setTargetPosition((int)LiftPosit);
 
-        robot.extend.setPower(1);
-        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.extend.setTargetPosition((int)ExtendPosit);
+        //#### SQUARE UP ####
+        squareUp(0,.15,1);
 
-
-        //#### FORWARD TOWARD BLOCKS ####
-        encoderForward(500,.3);
-
-        //#### OPEN CLAW TO ATTACK ####
-        robot.LServo.setPosition(1);
-        robot.MServo.setPosition(0.5);
-        robot.RServo.setPosition(1);
-
-        */
         //#### FINISH FAST FORWARD ####
-        encoderForward(750,0.25);
+        encoderForward(650,0.25);
 
         //#### APPROACH BLOCK SLOW ####
-        encoderForward(400,.15);
-        robot.motorPowers(0);
+        encoderForward(350,.15);
+        robot.stopMotors();
 
         //#### GRAB BLOCK #####
         robot.LServo.setPosition(0.3);
@@ -120,8 +108,8 @@ public class AutoV1_RED extends MM_LinearOpMode {
         robot.RServo.setPosition(1);
 
         //#### RETRACT ARM ####
-        LiftPosit = -250;
-        ExtendPosit = -200;
+        LiftPosit = -320;
+        ExtendPosit = -2050;
 
         robot.lift.setPower(1);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -133,28 +121,16 @@ public class AutoV1_RED extends MM_LinearOpMode {
 
 
         //### BACK AWAY AFTER GRAB ####
-        encoderForward(550,-0.35);
-        robot.motorPowers(0);
+        encoderForward(750,-0.35);
+        robot.stopMotors();
 
-        //#### SQUARE UP ####
-        squareUp(0,.2);
+        //#### ROTATE TO LINE ####
+        squareUp(-90,.3, 3);
+        squareUp(-90,.15, 1);
 
-        //#### STRAFE TOWARD RED LINE AND CLEAR ####
-        encoderStrafeRight(3000,.45);
-//        double distance = (blockArrangement/3.0) * 1000 + 100; //little sus
-//        sleep(Math.round(distance));
-
-        //#### STRAFE SLOW COLOR DETECT ####
-//        robot.vectorDrive(.2,0);
-//        double seenRed = robot.getColor(robot.colorRight)[0];
-//        while (seenRed < .07 && opModeIsActive()){
-//            seenRed = robot.getColor(robot.colorRight)[0];
-//            telemetry.addData("Current Red:", seenRed);
-//            telemetry.update();
-//        }
-
-        //#### SQUARE UP ####
-        squareUp(0,.2);
+        //#### FORWARD TOWARD RED LINE ####
+        encoderForward(2500 + forward_addition,.45);
+        robot.stopMotors();
 
 
         //#### RELEASE BLOCK ####
@@ -175,31 +151,41 @@ public class AutoV1_RED extends MM_LinearOpMode {
 
 
         //#### BACK AWAY FROM BLOCK ####
-        encoderForward(650,-0.40);
+        encoderForward(350,-0.40);
         robot.motorPowers(0);
 
         LiftPosit = -50;
         ExtendPosit = -200;
 
-        robot.lift.setPower(1);
-        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.lift.setTargetPosition((int)LiftPosit);
-
         robot.extend.setPower(1);
         robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.extend.setTargetPosition((int)ExtendPosit);
+
         sleep(250);
+        robot.lift.setPower(.65);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition((int)LiftPosit);
 
-        //#### FAST BACK LEFT DIAGONAL ####
-        robot.vectorDrive(.85,205);//back off and go left
-        waitEncoderAvg(3500);
+        //#### SQUARE UP ####
+        squareUp(-90,.15, 1);
 
-        //#### POSSIBLY SQUARE UP ####
-        squareUp(0, .2);
+        //#### BACK OVER LINE ####
+        encoderForward(2650 + forward_addition,-0.65);
 
+        //#### SQUARE UP BACK TO STRAIGHT ####
+        squareUp(0,.3, 3);
+        squareUp(0,.15, 1);
+
+        //#### BACK UP INTO WALL ####
+        encoderForward(1200,-.4);
+        robot.stopMotors();
+
+        //### FORWARD BEFORE VIDEO DETECT
+        encoderForward(500,0.35);
+        squareUp(0,.15,1);
 
         //#### STRAFE TO DETECT BLOCK ####
-        robot.vectorDrive(.25,180);
+        robot.vectorDrive(.25,185); //was 180
         Point center = new Point (0,0); //starts us with a loop
         int targetPixel = 390;
         if (blockArrangement == MM_OpenCV.LEFT){targetPixel = 300;} //TODO 150 is too little, check 300
@@ -219,7 +205,7 @@ public class AutoV1_RED extends MM_LinearOpMode {
             }
 
         }
-        encoderStrafeRight(160,-.2);
+        encoderStrafeRight(135,-.2);
         robot.stopMotors();
         //sleep(250);
 
@@ -234,8 +220,6 @@ public class AutoV1_RED extends MM_LinearOpMode {
         robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.extend.setTargetPosition((int)ExtendPosit);
 
-        //#### FORWARD TOWARD BLOCKS ####
-        encoderForward(400,0.30);
 
         //#### OPEN CLAW TO ATTACK ####
         robot.LServo.setPosition(1);
@@ -243,11 +227,11 @@ public class AutoV1_RED extends MM_LinearOpMode {
         robot.RServo.setPosition(1);
 
         //#### FINISH FAST FORWARD ####
-        encoderForward(750,0.30);
+        encoderForward(650,0.30);
 
 
         //#### APPROACH BLOCK SLOW ####
-        encoderForward(400,0.2);
+        encoderForward(450,0.2);
         robot.motorPowers(0);
 
 
@@ -257,8 +241,8 @@ public class AutoV1_RED extends MM_LinearOpMode {
         robot.RServo.setPosition(1);
 
         //#### RETRACT ARM ####
-        LiftPosit = -250;
-        ExtendPosit = -200;
+        LiftPosit = -320;
+        ExtendPosit = -2050;
 
         robot.lift.setPower(1);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -271,19 +255,17 @@ public class AutoV1_RED extends MM_LinearOpMode {
 
 
         //#### BACK AWAY AFTER GRAB ####
-        encoderForward(1000,-0.30);
+        encoderForward(1700,-0.30);
         robot.motorPowers(0);
 
-        //#### SQUARE UP ####
-        squareUp(0,.2);
+        //#### ROTATE TO LINE ####
+        squareUp(-90,.3, 3);
+        squareUp(-90,.15, 1);
 
-        //#### FAST STRAFE TO RED LINE AND CLEAR ####
-        encoderStrafeRight(5000,.75);
-        robot.motorPowers(0);
-
-        //TODO
+        //#### FORWARD TOWARD RED LINE ####
+        encoderForward(3650 + forward_addition,.45);
         robot.stopMotors();
-        while(opModeIsActive()){reportMotors();}
+
 
         //#### RELEASE BLOCK ####
         ExtendPosit = -2450;
@@ -308,21 +290,19 @@ public class AutoV1_RED extends MM_LinearOpMode {
         LiftPosit = -50;
         ExtendPosit = -200;
 
-        robot.lift.setPower(1);
-        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.lift.setTargetPosition((int)LiftPosit);
-
         robot.extend.setPower(1);
         robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.extend.setTargetPosition((int)ExtendPosit);
+
         sleep(250);
+        robot.lift.setPower(.75);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition((int)LiftPosit);
 
-        //#### BACK AWAY AFTER DROP ####
-        encoderForward(500,-0.40);
+
+        //#### BACK AWAY AFTER DROP INTO THE LINE ####
+        encoderForward(300,-0.40);
         robot.motorPowers(0);
-
-        //#### STRAFE BACK OVER RED LINE ####
-        encoderStrafeRight(1500,-.7);
 
         end();
 
@@ -367,6 +347,21 @@ public class AutoV1_RED extends MM_LinearOpMode {
             diff = robot.getIMU_Heading(AngleUnit.DEGREES) - angle;
         }
         robot.stopMotors();
-        return;
+    }
+    private void squareUp(double angle, double power, double range){
+        double diff = robot.getIMU_Heading(AngleUnit.DEGREES) - angle;
+        if (diff > 0){
+            robot.rotate(power, robot.COUNTERCLOCKWISE);
+        }
+        else if (diff < 0){
+            robot.rotate(power, robot.CLOCKWISE);
+        }
+        while(Math.abs(diff) > range && opModeIsActive()){
+            diff = robot.getIMU_Heading(AngleUnit.DEGREES) - angle;
+            telemetry.addData("IMU", robot.getIMU_Heading(AngleUnit.DEGREES));
+            telemetry.addData("Diff", diff);
+            telemetry.update();
+        }
+        robot.stopMotors();
     }
 }
