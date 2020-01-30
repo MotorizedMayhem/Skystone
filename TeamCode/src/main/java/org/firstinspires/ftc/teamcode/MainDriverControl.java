@@ -56,7 +56,7 @@ import java.util.concurrent.TimeUnit;
  *
  * Displays the first pattern upon init.
  */
-@TeleOp(name="SaturdayScrimage")
+@TeleOp(name="MainDriverControl")
 @Disabled
 public class MainDriverControl extends OpMode {
 

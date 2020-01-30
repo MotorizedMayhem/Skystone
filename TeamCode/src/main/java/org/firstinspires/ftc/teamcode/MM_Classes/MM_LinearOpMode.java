@@ -26,6 +26,9 @@ public abstract class MM_LinearOpMode extends LinearOpMode {
     }
 
     public void end(){
+//        robot.stopMotors();
+//        robot.extend.setPower(0);
+//        robot.lift.setPower(0);
         final FtcRobotControllerActivity context = (FtcRobotControllerActivity) hardwareMap.appContext;
         context.runOnUiThread(new Runnable(){
             @Override

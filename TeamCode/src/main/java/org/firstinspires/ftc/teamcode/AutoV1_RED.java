@@ -99,7 +99,7 @@ int forward_addition = 0;
         encoderForward(650,0.25);
 
         //#### APPROACH BLOCK SLOW ####
-        encoderForward(350,.15);
+        encoderForward(300,.15); //TODO WAS 350
         robot.stopMotors();
 
         //#### GRAB BLOCK #####
@@ -151,7 +151,7 @@ int forward_addition = 0;
 
 
         //#### BACK AWAY FROM BLOCK ####
-        encoderForward(350,-0.40);
+        encoderForward(100,-0.40);
         robot.motorPowers(0);
 
         LiftPosit = -50;
@@ -162,12 +162,14 @@ int forward_addition = 0;
         robot.extend.setTargetPosition((int)ExtendPosit);
 
         sleep(250);
-        robot.lift.setPower(.65);
+        robot.lift.setPower(1);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.lift.setTargetPosition((int)LiftPosit);
 
         //#### SQUARE UP ####
         squareUp(-90,.15, 1);
+
+        sleep(750); //give lift time to come down
 
         //#### BACK OVER LINE ####
         encoderForward(2650 + forward_addition,-0.65);
@@ -188,7 +190,8 @@ int forward_addition = 0;
         robot.vectorDrive(.25,185); //was 180
         Point center = new Point (0,0); //starts us with a loop
         int targetPixel = 390;
-        if (blockArrangement == MM_OpenCV.LEFT){targetPixel = 300;} //TODO 150 is too little, check 300
+        boolean leftCase = false;
+        if (blockArrangement == MM_OpenCV.LEFT){targetPixel = 300; leftCase = true;} //TODO 150 is too little, check 300
         while (center.x < targetPixel && opModeIsActive()){
             colorImg = openCV.getFrames();
             contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
@@ -231,9 +234,11 @@ int forward_addition = 0;
 
 
         //#### APPROACH BLOCK SLOW ####
-        encoderForward(450,0.2);
+        encoderForward(400,0.2); //TODO was 450
         robot.motorPowers(0);
 
+        //#### IF LEFT, PIVOT TO THE LEFT ####
+        if (leftCase){squareUp(30,.15);}
 
         //#### GRAB BLOCK #####
         robot.LServo.setPosition(0.3);
@@ -263,7 +268,12 @@ int forward_addition = 0;
         squareUp(-90,.15, 1);
 
         //#### FORWARD TOWARD RED LINE ####
-        encoderForward(3650 + forward_addition,.45);
+        if (!leftCase) {
+            encoderForward(3800 + forward_addition, .45);
+        }
+        else{
+            encoderForward(3500, .45);
+        }
         robot.stopMotors();
 
 
@@ -284,7 +294,7 @@ int forward_addition = 0;
         sleep(250);
 
         //#### BACK AWAY FROM BLOCK ####
-        encoderForward(350,-0.40);
+        encoderForward(50,-0.40); //TODO was 100
         robot.motorPowers(0);
 
         LiftPosit = -50;
@@ -295,16 +305,17 @@ int forward_addition = 0;
         robot.extend.setTargetPosition((int)ExtendPosit);
 
         sleep(250);
-        robot.lift.setPower(.75);
+        robot.lift.setPower(1);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.lift.setTargetPosition((int)LiftPosit);
 
+        sleep(750); //give block time to come down
 
         //#### BACK AWAY AFTER DROP INTO THE LINE ####
         encoderForward(300,-0.40);
         robot.motorPowers(0);
 
-        end();
+        end(); //TODO
 
     }
     private void reportMotors(){
