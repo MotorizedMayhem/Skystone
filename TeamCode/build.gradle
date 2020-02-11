@@ -10,6 +10,21 @@
 
 
 // Custom definitions may go here
+apply plugin: 'com.android.application'
+
+/*
+android {
+    splits {
+        abi {
+            enable true
+            reset()
+            include "armeabi-v7a"
+            //universalApk true
+        }
+    }
+}
+*/
+
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'
