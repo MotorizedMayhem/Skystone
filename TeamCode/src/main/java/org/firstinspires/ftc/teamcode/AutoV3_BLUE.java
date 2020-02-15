@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_LinearOpMode;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_OpenCV;
+import org.firstinspires.ftc.teamcode.MM_Classes.MecanumYellow;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -13,8 +14,8 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 
-@Autonomous(name = "Auto RED", group = "Depot")
-public class AutoV1_RED extends MM_LinearOpMode {
+@Autonomous(name = "Auto BLUE V3", group = "Depot")
+public class AutoV3_BLUE extends MM_LinearOpMode {
 int forward_addition = 0;
 
 
@@ -25,23 +26,6 @@ int forward_addition = 0;
         openCV.THRESHOLD = 25;
         telemetry.update();
         waitForStart();
-
-        int ExtendPosit = -2450;
-        int LiftPosit = -575; //525
-        robot.lift.setPower(1);
-        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.lift.setTargetPosition((int)LiftPosit);
-
-        robot.extend.setPower(.75);
-        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.extend.setTargetPosition((int)ExtendPosit);
-
-
-
-        //#### OPEN CLAW TO ATTACK ####
-        robot.LServo.setPosition(1);
-        robot.MServo.setPosition(0.5);
-        robot.RServo.setPosition(1);
 
 
         Mat colorImg = openCV.getFrames();
@@ -60,39 +44,64 @@ int forward_addition = 0;
             //sleep(2000);
             if (scaledXCenter < 0.33) {
                 blockArrangement = MM_OpenCV.LEFT;
-                forward_addition =600;
+                forward_addition = 0;
             } else if (scaledXCenter < 0.66) //valid bc we already checked the first
             {
                 blockArrangement = MM_OpenCV.CENTER;
                 forward_addition =300;
             } else if (scaledXCenter >= 0.66) { //dont use else in case something rlly messed up
                 blockArrangement = MM_OpenCV.RIGHT;
+                forward_addition = 600;
             }
         }
         telemetry.addData("arrangement", blockArrangement);
         telemetry.update();
 
+        int ExtendPosit = -2450;
+        int LiftPosit = -575; //525
+        robot.lift.setPower(1);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition((int)LiftPosit);
+
+        robot.extend.setPower(.75);
+        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extend.setTargetPosition((int)ExtendPosit);
+
+
+
+        //#### OPEN CLAW TO ATTACK ####
+        robot.LServo.setPosition(1);
+        robot.MServo.setPosition(0.5);
+        robot.RServo.setPosition(1);
+        while(opModeIsActive()){
+            idle();
+        }
+
+
+//        //#### FORWARD TOWARD BLOCKS ####
+//        encoderForward(500,.3);
+//        int target = 125;
+//        if (blockArrangement == MM_OpenCV.LEFT){
+//            target = 150;
+//        }
 
         //#### FORWARD TOWARD BLOCKS ####
         encoderForward(500,.3);
-        int target = 390;
-        if (blockArrangement == MM_OpenCV.LEFT){
-            target = 375;
+
+
+        robot.vectorDrive(0.25, MecanumYellow.RIGHT);
+        Point center = MM_OpenCV.findCenterOfLargest(contours);
+        while (center.x > 125 && opModeIsActive()){
+            colorImg = openCV.getFrames();
+            contourable = openCV.ProcessImgBlue(colorImg, openCV.THRESHOLD);
+            contours = MM_OpenCV.findContours(contourable);
+            croppedColor = openCV.CropMatBlue(colorImg);
+            finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
+            MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
+            center = MM_OpenCV.findCenterOfLargest(contours);
         }
-        if (blockArrangement != MM_OpenCV.NONE){ //maybe was right
-            robot.vectorDrive(0.2, 180);
-            Point center = MM_OpenCV.findCenterOfLargest(contours);
-            while (center.x < target && opModeIsActive()){
-                colorImg = openCV.getFrames();
-                contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
-                contours = MM_OpenCV.findContours(contourable);
-                croppedColor = openCV.CropMatRed(colorImg);
-                finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
-                MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
-                center = MM_OpenCV.findCenterOfLargest(contours);
-            }
-        }
-        encoderStrafeRight(150,-.2);
+
+        encoderStrafeRight(150,.2);
         robot.stopMotors();
 
         //#### SQUARE UP ####
@@ -128,8 +137,8 @@ int forward_addition = 0;
         robot.stopMotors();
 
         //#### ROTATE TO LINE ####
-        squareUp(-90,.3, 3);
-        squareUp(-90,.15, 1);
+        squareUp(90,.3, 3);
+        squareUp(90,.15, 1);
 
         //#### FORWARD TOWARD RED LINE ####
         encoderForward(2500 + forward_addition,.45);
@@ -170,7 +179,7 @@ int forward_addition = 0;
         robot.lift.setTargetPosition((int)LiftPosit);
 
         //#### SQUARE UP ####
-        squareUp(-90,.15, 1);
+        squareUp(90,.15, 1);
 
         sleep(750); //give lift time to come down
 
@@ -191,12 +200,12 @@ int forward_addition = 0;
         squareUp(0,.15,1);
 
         //#### STRAFE TO DETECT BLOCK ####
-        robot.vectorDrive(.25,180); //was 180
-        Point center = new Point (0,0); //starts us with a loop
-        int targetPixel = 390;
-        boolean leftCase = false;
-        if (blockArrangement == MM_OpenCV.LEFT){targetPixel = 300; leftCase = true;}
-        while (center.x < targetPixel && opModeIsActive()){
+        robot.vectorDrive(.25, MecanumYellow.RIGHT); //was 180
+        center = new Point (0,0); //starts us with a loop
+        int targetPixel = 125;
+        boolean right_case = false;
+        if (blockArrangement == MM_OpenCV.RIGHT){targetPixel = 150; right_case = true;}
+        while (center.x > targetPixel && opModeIsActive()){
             colorImg = openCV.getFrames();
             contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
             contours = MM_OpenCV.findContours(contourable);
@@ -212,7 +221,7 @@ int forward_addition = 0;
             }
 
         }
-        encoderStrafeRight(135,-.2);
+        encoderStrafeRight(135,.2);
         robot.stopMotors();
         //sleep(250);
 
@@ -241,8 +250,8 @@ int forward_addition = 0;
         encoderForward(400,0.2);
         robot.motorPowers(0);
 
-        //#### IF LEFT, PIVOT TO THE LEFT ####
-        if (leftCase){squareUp(30,.15);}
+        //#### IF RIGHT, PIVOT TO THE RIGHT ####
+        if (right_case){squareUp(-30,.15);}
 
         //#### GRAB BLOCK #####
         robot.LServo.setPosition(0.3);
@@ -268,11 +277,11 @@ int forward_addition = 0;
         robot.motorPowers(0);
 
         //#### ROTATE TO LINE ####
-        squareUp(-90,.3, 3);
-        squareUp(-90,.10, .5);
+        squareUp(90,.3, 3);
+        squareUp(90,.10, .5);
 
         //#### FORWARD TOWARD RED LINE ####
-        if (!leftCase) {
+        if (!right_case) {
             encoderForward(3800 + forward_addition, .45);
         }
         else{
@@ -316,7 +325,7 @@ int forward_addition = 0;
         sleep(750); //give block time to come down
 
         //#### BACK AWAY AFTER DROP INTO THE LINE ####
-        encoderForward(300,-0.40);
+        encoderForward(500,-0.40);
         robot.motorPowers(0);
 
         end();

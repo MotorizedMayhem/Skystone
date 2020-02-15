@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_LinearOpMode;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_OpenCV;
@@ -11,7 +12,7 @@ import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
-
+@Disabled
 @Autonomous(name = "Auto BLUE", group = "Depot")
 public class AutoV1_BLUE extends MM_LinearOpMode {
 

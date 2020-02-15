@@ -14,7 +14,7 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 
-@Autonomous(name = "Auto BLUE 2", group = "Depot")
+@Autonomous(name = "Auto BLUE V2", group = "Depot")
 public class AutoV2_Blue extends MM_LinearOpMode {
 int forward_addition = 0;
 
@@ -26,7 +26,6 @@ int forward_addition = 0;
         openCV.THRESHOLD = 25;
         telemetry.update();
         waitForStart();
-
         int ExtendPosit = -2450;
         int LiftPosit = -575; //525
         robot.lift.setPower(1);
@@ -125,7 +124,6 @@ int forward_addition = 0;
         //### BACK AWAY AFTER GRAB ####
         encoderForward(750,-0.35);
         robot.stopMotors();
-
         //#### ROTATE TO LINE ####
         squareUp(90,.3, 3);
         squareUp(90,.15, 1);
