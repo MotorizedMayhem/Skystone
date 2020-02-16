@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Pair;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,9 +16,9 @@ import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
-@Autonomous(name = "Auto BLUE V3", group = "Depot")
-public class AutoV3_BLUE extends MM_LinearOpMode {
-int forward_addition = 0;
+@Autonomous(name = "Auto BLUE V$", group = "Depot")
+public class AutoV4_BLUE extends MM_LinearOpMode {
+    int forward_addition = 0;
 
 
     @Override
@@ -28,35 +30,33 @@ int forward_addition = 0;
         waitForStart();
 
 
-        Mat colorImg = openCV.getFrames();
-        Mat contourable = openCV.ProcessImgBlue(colorImg, openCV.THRESHOLD);
-        List<MatOfPoint> contours = MM_OpenCV.findContours(contourable);
-        Mat croppedColor = openCV.CropMatBlue(colorImg);
-        Mat finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
+
+        Pair<Point,Mat> center_final = opencvIdentifyCenter();
+        Point blockCenter =  center_final.first;
+        Mat finalPrint = center_final.second;
         MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
+
+        double scaledXCenter = blockCenter.x / finalPrint.width();
         int blockArrangement = MM_OpenCV.NONE;
-
-        if (contours.size() != 0) {
-            Point blockCenter = MM_OpenCV.findCenterOfLargest(contours);
-
-            double scaledXCenter = blockCenter.x / finalPrint.width();
-
-            //sleep(2000);
-            if (scaledXCenter < 0.33) {
-                blockArrangement = MM_OpenCV.LEFT;
-                forward_addition = 0;
-            } else if (scaledXCenter < 0.66) //valid bc we already checked the first
-            {
-                blockArrangement = MM_OpenCV.CENTER;
-                forward_addition =300;
-            } else if (scaledXCenter >= 0.66) { //dont use else in case something rlly messed up
-                blockArrangement = MM_OpenCV.RIGHT;
-                forward_addition = 600;
-            }
+        //sleep(2000);
+        if (scaledXCenter < 0.33) {
+            blockArrangement = MM_OpenCV.LEFT;
+            forward_addition = 0;
+        } else if (scaledXCenter < 0.66) //valid bc we already checked the first
+        {
+            blockArrangement = MM_OpenCV.CENTER;
+            forward_addition =300;
+        } else if (scaledXCenter >= 0.66) { //dont use else in case something rlly messed up
+            blockArrangement = MM_OpenCV.RIGHT;
+            forward_addition = 600;
         }
+
         telemetry.addData("arrangement", blockArrangement);
         telemetry.update();
 
+
+
+        //#### EXTEND ARM ####
         int ExtendPosit = -2450;
         int LiftPosit = -575; //525
         robot.lift.setPower(1);
@@ -77,30 +77,24 @@ int forward_addition = 0;
             idle();
         }
 
-
-//        //#### FORWARD TOWARD BLOCKS ####
-//        encoderForward(500,.3);
-//        int target = 125;
-//        if (blockArrangement == MM_OpenCV.LEFT){
-//            target = 150;
-//        }
-
         //#### FORWARD TOWARD BLOCKS ####
         encoderForward(500,.3);
 
-
-        robot.vectorDrive(0.25, MecanumYellow.RIGHT);
-        Point center = MM_OpenCV.findCenterOfLargest(contours);
-        while (center.x > 125 && opModeIsActive()){
-            colorImg = openCV.getFrames();
-            contourable = openCV.ProcessImgBlue(colorImg, openCV.THRESHOLD);
-            contours = MM_OpenCV.findContours(contourable);
-            croppedColor = openCV.CropMatBlue(colorImg);
-            finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
-            MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
-            center = MM_OpenCV.findCenterOfLargest(contours);
+        //#### DETECT BLOCK WHILE STRAFING
+        int target = 390;
+        if (blockArrangement == MM_OpenCV.LEFT){
+            target = 375;
+        }
+        robot.vectorDrive(0.25, MecanumYellow.LEFT);
+        Point center = opencvIdentifyCenter().first;
+        while (center.x < target && opModeIsActive()){
+            center_final = opencvIdentifyCenter();
+            center = opencvIdentifyCenter().first;
+            MM_OpenCV.printToDisplay(center_final.second, hardwareMap);
         }
 
+
+        //#### ALIGN TO BLOCK
         encoderStrafeRight(150,.2);
         robot.stopMotors();
 
@@ -199,6 +193,7 @@ int forward_addition = 0;
         encoderForward(500,0.35);
         squareUp(0,.15,1);
 
+        //TODO CONSIDER MAKING THIS HALF BASED ON MEMORY AND VUFORIA
         //#### STRAFE TO DETECT BLOCK ####
         robot.vectorDrive(.25, MecanumYellow.RIGHT); //was 180
         center = new Point (0,0); //starts us with a loop
@@ -206,10 +201,10 @@ int forward_addition = 0;
         boolean right_case = false;
         if (blockArrangement == MM_OpenCV.RIGHT){targetPixel = 150; right_case = true;}
         while (center.x > targetPixel && opModeIsActive()){
-            colorImg = openCV.getFrames();
-            contourable = openCV.ProcessImgBlue(colorImg, openCV.THRESHOLD);
-            contours = MM_OpenCV.findContours(contourable);
-            croppedColor = openCV.CropMatBlue(colorImg);
+            Mat colorImg = openCV.getFrames();
+            Mat contourable = openCV.ProcessImgBlue(colorImg, openCV.THRESHOLD);
+            List<MatOfPoint> contours = MM_OpenCV.findContours(contourable);
+            Mat croppedColor = openCV.CropMatBlue(colorImg);
             finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
             MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
             if (contours.size() != 0) {
@@ -387,5 +382,19 @@ int forward_addition = 0;
             telemetry.update();
         }
         robot.stopMotors();
+    }
+    private Pair<Point,Mat> opencvIdentifyCenter(){
+        Mat colorImg = openCV.getFrames();
+        Mat contourable = openCV.ProcessImg(colorImg, openCV.THRESHOLD);
+        List<MatOfPoint> contours = MM_OpenCV.findContours(contourable);
+        Mat croppedColor = openCV.CropMatRed(colorImg);
+        Mat finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
+        Point blockCenter = new Point(0,0);
+        if (contours.size() != 0) {
+            blockCenter = MM_OpenCV.findCenterOfLargest(contours);
+
+            double scaledXCenter = blockCenter.x / finalPrint.width();
+        }
+        return new Pair<Point,Mat>(blockCenter, finalPrint);
     }
 }
