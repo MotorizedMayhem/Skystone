@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_LinearOpMode;
+import org.firstinspires.ftc.teamcode.MM_Classes.MM_LinearOpModeV2;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_OpenCV;
 import org.firstinspires.ftc.teamcode.MM_Classes.MecanumYellow;
 import org.opencv.core.Mat;
@@ -15,8 +16,8 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 @Autonomous(name = "Auto BLUE V3", group = "Depot")
-public class AutoV3_BLUE extends MM_LinearOpMode {
-int forward_addition = 0;
+public class AutoV3_BLUE extends MM_LinearOpModeV2 {
+private int forward_addition = 0;
 
 
     @Override
@@ -48,17 +49,17 @@ int forward_addition = 0;
             } else if (scaledXCenter < 0.66) //valid bc we already checked the first
             {
                 blockArrangement = MM_OpenCV.CENTER;
-                forward_addition =300;
+                forward_addition =600;
             } else if (scaledXCenter >= 0.66) { //dont use else in case something rlly messed up
                 blockArrangement = MM_OpenCV.RIGHT;
-                forward_addition = 600;
+                forward_addition = 1000;
             }
         }
         telemetry.addData("arrangement", blockArrangement);
         telemetry.update();
 
         int ExtendPosit = -2450;
-        int LiftPosit = -575; //525
+        int LiftPosit = -675; //575
         robot.lift.setPower(1);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.lift.setTargetPosition((int)LiftPosit);
@@ -71,11 +72,8 @@ int forward_addition = 0;
 
         //#### OPEN CLAW TO ATTACK ####
         robot.LServo.setPosition(1);
-        robot.MServo.setPosition(0.5);
+        robot.MServo.setPosition(0.65);
         robot.RServo.setPosition(1);
-        while(opModeIsActive()){
-            idle();
-        }
 
 
 //        //#### FORWARD TOWARD BLOCKS ####
@@ -91,7 +89,7 @@ int forward_addition = 0;
 
         robot.vectorDrive(0.25, MecanumYellow.RIGHT);
         Point center = MM_OpenCV.findCenterOfLargest(contours);
-        while (center.x > 125 && opModeIsActive()){
+        while (center.x > 225 && opModeIsActive()){ //was 125
             colorImg = openCV.getFrames();
             contourable = openCV.ProcessImgBlue(colorImg, openCV.THRESHOLD);
             contours = MM_OpenCV.findContours(contourable);
@@ -101,7 +99,9 @@ int forward_addition = 0;
             center = MM_OpenCV.findCenterOfLargest(contours);
         }
 
-        encoderStrafeRight(150,.2);
+        if (blockArrangement != MM_OpenCV.LEFT){
+            //encoderStrafeRight(75,-.2); //was 150
+        }
         robot.stopMotors();
 
         //#### SQUARE UP ####
@@ -111,30 +111,22 @@ int forward_addition = 0;
         encoderForward(650,0.25);
 
         //#### APPROACH BLOCK SLOW ####
-        encoderForward(300,.15);
+        encoderForward(200,.15); //was 300
         robot.stopMotors();
 
         //#### GRAB BLOCK #####
         robot.LServo.setPosition(0.3);
-        robot.MServo.setPosition(0.5);
+        robot.MServo.setPosition(0.65);
         robot.RServo.setPosition(1);
 
         //#### RETRACT ARM ####
-        LiftPosit = -320;
-        ExtendPosit = -2050;
-
-        robot.lift.setPower(1);
-        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.lift.setTargetPosition((int)LiftPosit);
-
-        robot.extend.setPower(1);
-        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.extend.setTargetPosition((int)ExtendPosit);
+        moveArmLift(-2050,-320);
 
 
         //### BACK AWAY AFTER GRAB ####
         encoderForward(150,-0.35);
         robot.stopMotors();
+
 
         //#### ROTATE TO LINE ####
         squareUp(90,.3, 3);
@@ -146,18 +138,10 @@ int forward_addition = 0;
 
 
         //#### RELEASE BLOCK ####
-        ExtendPosit = -2650;
-        LiftPosit = -950;
-        robot.lift.setPower(1);
-        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.lift.setTargetPosition((int)LiftPosit);
-
-        robot.extend.setPower(1);
-        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.extend.setTargetPosition((int)ExtendPosit);
+        moveArmLift(-2650,-950);
 
         robot.LServo.setPosition(1);
-        robot.MServo.setPosition(0.5);
+        robot.MServo.setPosition(0.65);
         robot.RServo.setPosition(1);
         sleep(250);
 
@@ -179,21 +163,26 @@ int forward_addition = 0;
         robot.lift.setTargetPosition((int)LiftPosit);
 
         //#### SQUARE UP ####
-        squareUp(90,.15, 1);
+        squareUp(87,.15, 0.5);
 
         sleep(750); //give lift time to come down
 
+
         //#### BACK OVER LINE ####
-        encoderForward(2650 + forward_addition,-0.65);
+        encoderForward(2750 + forward_addition,-0.65);
 
         //#### SQUARE UP BACK TO STRAIGHT ####
         squareUp(0,.3, 3);
         squareUp(0,.15, 1);
 
-        //TODO DETERMINE IF NEEDED
         //#### BACK UP INTO WALL ####
-        encoderForward(1900,-.4); //was 900 and halfway
+        encoderForward(900,-.4); //fast first
+        encoderForward(600,-.3); //slower contact
+        if(blockArrangement == MM_OpenCV.RIGHT){
+            encoderStrafeRight(500,.4);
+        }
         robot.stopMotors();
+
 
         //### FORWARD BEFORE VIDEO DETECT
         encoderForward(500,0.35);
@@ -201,45 +190,39 @@ int forward_addition = 0;
 
         //#### STRAFE TO DETECT BLOCK ####
         robot.vectorDrive(.25, MecanumYellow.RIGHT); //was 180
-        center = new Point (0,0); //starts us with a loop
-        int targetPixel = 125;
+        center = new Point (500,0); //starts us with a loop
+        int targetPixel = 225;
         boolean right_case = false;
-        if (blockArrangement == MM_OpenCV.RIGHT){targetPixel = 150; right_case = true;}
-        while (center.x > targetPixel && opModeIsActive()){
-            colorImg = openCV.getFrames();
-            contourable = openCV.ProcessImgBlue(colorImg, openCV.THRESHOLD);
-            contours = MM_OpenCV.findContours(contourable);
-            croppedColor = openCV.CropMatBlue(colorImg);
-            finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
-            MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
-            if (contours.size() != 0) {
-                int index = MM_OpenCV.findLargestContourIndex(contours);
-                double largestArea =  Imgproc.contourArea(contours.get(index));
-                if (largestArea > 5000){
-                    center = MM_OpenCV.findCenterOfLargest(contours,index);
+        if (blockArrangement == MM_OpenCV.RIGHT){right_case = true;}
+        else {
+            while (center.x > targetPixel && opModeIsActive()) {
+                colorImg = openCV.getFrames();
+                contourable = openCV.ProcessImgBlue(colorImg, openCV.THRESHOLD);
+                contours = MM_OpenCV.findContours(contourable);
+                croppedColor = openCV.CropMatBlue(colorImg);
+                finalPrint = MM_OpenCV.DISPLAY(croppedColor, contours);
+                MM_OpenCV.printToDisplay(finalPrint, hardwareMap);
+                if (contours.size() != 0) {
+                    int index = MM_OpenCV.findLargestContourIndex(contours);
+                    double largestArea = Imgproc.contourArea(contours.get(index));
+                    if (largestArea > 5000) {
+                        center = MM_OpenCV.findCenterOfLargest(contours, index);
+                    }
                 }
-            }
 
+            }
         }
-        encoderStrafeRight(135,.2);
+        //encoderStrafeRight(135,.2);
         robot.stopMotors();
         //sleep(250);
 
         //#### RAISE CLAW TO ATTACK ####
-        ExtendPosit = -2450;
-        LiftPosit = -555;
-        robot.lift.setPower(1);
-        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.lift.setTargetPosition((int)LiftPosit);
-
-        robot.extend.setPower(1);
-        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.extend.setTargetPosition((int)ExtendPosit);
+        moveArmLift(-2450,right_case ? -650: -600);
 
 
         //#### OPEN CLAW TO ATTACK ####
         robot.LServo.setPosition(1);
-        robot.MServo.setPosition(0.5);
+        robot.MServo.setPosition(0.65);
         robot.RServo.setPosition(1);
 
         //#### FINISH FAST FORWARD ####
@@ -247,20 +230,30 @@ int forward_addition = 0;
 
 
         //#### APPROACH BLOCK SLOW ####
-        encoderForward(400,0.2);
+        if (!right_case) {
+            encoderForward(300, 0.2);
+        }
         robot.motorPowers(0);
 
-        //#### IF RIGHT, PIVOT TO THE RIGHT ####
-        if (right_case){squareUp(-30,.15);}
+        //#### IF RIGHT, PIVOT TO THE RIGHT AND EXTEND MORE ####
+        if (right_case){
+            squareUp(-25,.15);
+            moveArmLift(-3200,600);
+        }
+
+        sleep(300);
+
+
+
 
         //#### GRAB BLOCK #####
         robot.LServo.setPosition(0.3);
-        robot.MServo.setPosition(0.5);
+        robot.MServo.setPosition(0.65);
         robot.RServo.setPosition(1);
 
         //#### RETRACT ARM ####
         LiftPosit = -320;
-        ExtendPosit = -2050;
+        ExtendPosit = -2050; //was 2050
 
         robot.lift.setPower(1);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -279,6 +272,7 @@ int forward_addition = 0;
         //#### ROTATE TO LINE ####
         squareUp(90,.3, 3);
         squareUp(90,.10, .5);
+
 
         //#### FORWARD TOWARD RED LINE ####
         if (!right_case) {
@@ -302,7 +296,7 @@ int forward_addition = 0;
         robot.extend.setTargetPosition((int)ExtendPosit);
 
         robot.LServo.setPosition(1);
-        robot.MServo.setPosition(0.5);
+        robot.MServo.setPosition(0.65);
         robot.RServo.setPosition(1);
         sleep(250);
 
@@ -328,7 +322,7 @@ int forward_addition = 0;
         encoderForward(500,-0.40);
         robot.motorPowers(0);
 
-        end();
+//        end();
 
     }
     private void reportMotors(){
@@ -367,7 +361,7 @@ int forward_addition = 0;
         else if (diff < 0){
             robot.rotate(power, robot.CLOCKWISE);
         }
-        while(Math.abs(diff) > 1.5){
+        while(Math.abs(diff) > 1.5 && opModeIsActive()){
             diff = robot.getIMU_Heading(AngleUnit.DEGREES) - angle;
         }
         robot.stopMotors();
@@ -387,5 +381,16 @@ int forward_addition = 0;
             telemetry.update();
         }
         robot.stopMotors();
+    }
+    private void moveArmLift(int extend, int lift){
+        extend = -Math.abs(extend);
+        lift = -Math.abs(lift);
+        robot.lift.setPower(1);
+        robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.lift.setTargetPosition(lift);
+
+        robot.extend.setPower(1);
+        robot.extend.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.extend.setTargetPosition(extend);
     }
 }

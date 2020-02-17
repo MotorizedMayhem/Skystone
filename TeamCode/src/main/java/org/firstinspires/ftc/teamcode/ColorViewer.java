@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MM_Classes.MecanumYellow;
-
+@Disabled
 @TeleOp(name = "Color Sensor View", group = "Sensor")
 public class ColorViewer extends OpMode {
     MecanumYellow robot = new MecanumYellow();

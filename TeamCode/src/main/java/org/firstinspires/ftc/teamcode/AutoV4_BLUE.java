@@ -16,7 +16,7 @@ import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
-@Autonomous(name = "Auto BLUE V$", group = "Depot")
+@Autonomous(name = "Auto BLUE V4", group = "Depot")
 public class AutoV4_BLUE extends MM_LinearOpMode {
     int forward_addition = 0;
 
@@ -73,9 +73,7 @@ public class AutoV4_BLUE extends MM_LinearOpMode {
         robot.LServo.setPosition(1);
         robot.MServo.setPosition(0.5);
         robot.RServo.setPosition(1);
-        while(opModeIsActive()){
-            idle();
-        }
+
 
         //#### FORWARD TOWARD BLOCKS ####
         encoderForward(500,.3);

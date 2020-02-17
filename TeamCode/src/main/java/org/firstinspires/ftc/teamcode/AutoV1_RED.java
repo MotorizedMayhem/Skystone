@@ -107,7 +107,7 @@ int forward_addition = 0;
 
         //#### GRAB BLOCK #####
         robot.LServo.setPosition(0.3);
-        robot.MServo.setPosition(0.5);
+        robot.MServo.setPosition(0.65);
         robot.RServo.setPosition(1);
 
         //#### RETRACT ARM ####
@@ -148,7 +148,7 @@ int forward_addition = 0;
         robot.extend.setTargetPosition((int)ExtendPosit);
 
         robot.LServo.setPosition(1);
-        robot.MServo.setPosition(0.5);
+        robot.MServo.setPosition(0.65);
         robot.RServo.setPosition(1);
         sleep(250);
 
@@ -230,7 +230,7 @@ int forward_addition = 0;
 
         //#### OPEN CLAW TO ATTACK ####
         robot.LServo.setPosition(1);
-        robot.MServo.setPosition(0.5);
+        robot.MServo.setPosition(0.65);
         robot.RServo.setPosition(1);
 
         //#### FINISH FAST FORWARD ####
@@ -246,7 +246,7 @@ int forward_addition = 0;
 
         //#### GRAB BLOCK #####
         robot.LServo.setPosition(0.3);
-        robot.MServo.setPosition(0.5);
+        robot.MServo.setPosition(0.65);
         robot.RServo.setPosition(1);
 
         //#### RETRACT ARM ####
@@ -293,7 +293,7 @@ int forward_addition = 0;
         robot.extend.setTargetPosition((int)ExtendPosit);
 
         robot.LServo.setPosition(1);
-        robot.MServo.setPosition(0.5);
+        robot.MServo.setPosition(0.65);
         robot.RServo.setPosition(1);
         sleep(250);
 

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -14,6 +15,7 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 
+@Disabled
 @Autonomous(name = "Auto BLUE V2", group = "Depot")
 public class AutoV2_Blue extends MM_LinearOpMode {
 int forward_addition = 0;
