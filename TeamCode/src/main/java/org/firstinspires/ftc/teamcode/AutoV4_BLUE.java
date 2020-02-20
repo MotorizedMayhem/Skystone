@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.media.MediaDrm;
 import android.util.Pair;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -16,6 +17,7 @@ import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
+@Disabled
 @Autonomous(name = "Auto BLUE V4", group = "Depot")
 public class AutoV4_BLUE extends MM_LinearOpMode {
     int forward_addition = 0;
@@ -53,7 +55,6 @@ public class AutoV4_BLUE extends MM_LinearOpMode {
 
         telemetry.addData("arrangement", blockArrangement);
         telemetry.update();
-
 
 
         //#### EXTEND ARM ####

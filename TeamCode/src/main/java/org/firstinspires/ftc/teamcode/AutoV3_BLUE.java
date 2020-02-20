@@ -15,7 +15,7 @@ import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
-@Autonomous(name = "Auto BLUE V3", group = "Depot")
+@Autonomous(name = "Auto BLUE", group = "Depot")
 public class AutoV3_BLUE extends MM_LinearOpModeV2 {
 private int forward_addition = 0;
 
@@ -52,7 +52,7 @@ private int forward_addition = 0;
                 forward_addition =600;
             } else if (scaledXCenter >= 0.66) { //dont use else in case something rlly messed up
                 blockArrangement = MM_OpenCV.RIGHT;
-                forward_addition = 1000;
+                forward_addition = 1200;
             }
         }
         telemetry.addData("arrangement", blockArrangement);

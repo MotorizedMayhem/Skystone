@@ -27,7 +27,7 @@ int forward_addition = 0;
         waitForStart();
 
         int ExtendPosit = -2450;
-        int LiftPosit = -575; //525
+        int LiftPosit = -675; //575
         robot.lift.setPower(1);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.lift.setTargetPosition((int)LiftPosit);
@@ -60,7 +60,7 @@ int forward_addition = 0;
             //sleep(2000);
             if (scaledXCenter < 0.33) {
                 blockArrangement = MM_OpenCV.LEFT;
-                forward_addition =600;
+                forward_addition =700;
             } else if (scaledXCenter < 0.66) //valid bc we already checked the first
             {
                 blockArrangement = MM_OpenCV.CENTER;
@@ -218,7 +218,7 @@ int forward_addition = 0;
 
         //#### RAISE CLAW TO ATTACK ####
         ExtendPosit = -2450;
-        LiftPosit = -555;
+        LiftPosit = -600; //was 555
         robot.lift.setPower(1);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.lift.setTargetPosition((int)LiftPosit);
