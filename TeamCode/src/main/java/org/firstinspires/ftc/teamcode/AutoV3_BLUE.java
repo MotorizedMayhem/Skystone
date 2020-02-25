@@ -15,7 +15,7 @@ import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
-@Autonomous(name = "Auto BLUE", group = "Depot")
+@Autonomous(name = "Auto Depot BLUE", group = "Depot")
 public class AutoV3_BLUE extends MM_LinearOpModeV2 {
 private int forward_addition = 0;
 
@@ -55,11 +55,23 @@ private int forward_addition = 0;
                 forward_addition = 1200;
             }
         }
+        String arrangement = "";
+        switch (blockArrangement){
+            case (1):
+                arrangement = "LEFT";
+            case (2):
+                arrangement = "CENTER";
+            case (3):
+                arrangement = "RIGHT";
+
+
+        }
         telemetry.addData("arrangement", blockArrangement);
+        telemetry.addData("position", blockArrangement);
         telemetry.update();
 
         int ExtendPosit = -2450;
-        int LiftPosit = -675; //575
+        int LiftPosit = -700; //575
         robot.lift.setPower(1);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.lift.setTargetPosition((int)LiftPosit);
@@ -217,7 +229,7 @@ private int forward_addition = 0;
         //sleep(250);
 
         //#### RAISE CLAW TO ATTACK ####
-        moveArmLift(-2450,right_case ? -650: -600);
+        moveArmLift(-2450,right_case ? -675: -625); //650, 600
 
 
         //#### OPEN CLAW TO ATTACK ####
@@ -266,7 +278,7 @@ private int forward_addition = 0;
 
 
         //#### BACK AWAY AFTER GRAB ####
-        encoderForward(200,-0.30);
+        encoderForward(right_case ? 50: 200,-0.30); //200
         robot.motorPowers(0);
 
         //#### ROTATE TO LINE ####
@@ -279,7 +291,7 @@ private int forward_addition = 0;
             encoderForward(3800 + forward_addition, .45);
         }
         else{
-            encoderForward(3900, .45);
+            encoderForward(4250, .45);
         }
         robot.stopMotors();
 
@@ -319,7 +331,7 @@ private int forward_addition = 0;
         sleep(750); //give block time to come down
 
         //#### BACK AWAY AFTER DROP INTO THE LINE ####
-        encoderForward(500,-0.40);
+        encoderForward(400,-0.40);
         robot.motorPowers(0);
 
 //        end();

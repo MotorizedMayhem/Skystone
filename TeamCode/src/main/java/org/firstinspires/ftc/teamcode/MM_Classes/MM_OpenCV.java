@@ -38,7 +38,7 @@ public class MM_OpenCV {
 
     private FtcRobotControllerActivity activity = null;// = (FtcRobotControllerActivity) hardwareMap.appContext;
     private boolean USE_WEBCAM;
-    public int THRESHOLD = 25;
+    public int THRESHOLD = 30;
 
     public MM_OpenCV(boolean USE_WEBCAM){
         this.USE_WEBCAM = USE_WEBCAM;

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.MM_Classes;
 import android.view.View;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.TimestampedI2cData;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -57,6 +58,7 @@ public abstract class MM_LinearOpModeV2 extends OpMode {
     public void runOpMode() throws InterruptedException
     {
         robot.init(hardwareMap);
+        robot.blinkinLedDriver.setPattern( RevBlinkinLedDriver.BlinkinPattern.YELLOW);
         vuforia.vuforia= vuforia.init(hardwareMap,MM_Vuforia.NO_USE_SCREEN, MM_Vuforia.USE_WEBCAM);
         telemetry.addData("Vuforia", vuforia.vuforia);
         //telemetry.update();
@@ -64,6 +66,7 @@ public abstract class MM_LinearOpModeV2 extends OpMode {
         openCVStartup = openCV.init(hardwareMap,vuforia.vuforia);
         telemetry.addData("OpenCV", openCVStartup);
         telemetry.update();
+        robot.blinkinLedDriver.setPattern( RevBlinkinLedDriver.BlinkinPattern.GREEN);
     }
 
     /**

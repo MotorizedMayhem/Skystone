@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_LinearOpMode;
+import org.firstinspires.ftc.teamcode.MM_Classes.MM_LinearOpModeV2;
 import org.firstinspires.ftc.teamcode.MM_Classes.MM_OpenCV;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -13,8 +14,8 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
 
-@Autonomous(name = "Auto RED", group = "Depot")
-public class AutoV1_RED extends MM_LinearOpMode {
+@Autonomous(name = "Auto Depot RED", group = "Depot")
+public class AutoV1_RED extends MM_LinearOpModeV2 {
 int forward_addition = 0;
 
 
@@ -22,7 +23,7 @@ int forward_addition = 0;
     public void runOpMode() throws InterruptedException {
         super.runOpMode();
         robot.FServo.setPosition(.85);
-        openCV.THRESHOLD = 25;
+        openCV.THRESHOLD = 30;
         telemetry.update();
         waitForStart();
 
@@ -60,7 +61,7 @@ int forward_addition = 0;
             //sleep(2000);
             if (scaledXCenter < 0.33) {
                 blockArrangement = MM_OpenCV.LEFT;
-                forward_addition =700;
+                forward_addition =800;
             } else if (scaledXCenter < 0.66) //valid bc we already checked the first
             {
                 blockArrangement = MM_OpenCV.CENTER;
@@ -69,8 +70,21 @@ int forward_addition = 0;
                 blockArrangement = MM_OpenCV.RIGHT;
             }
         }
+        String arrangement = "";
+        switch (blockArrangement){
+            case (1):
+                arrangement = "LEFT";
+            case (2):
+                arrangement = "CENTER";
+            case (3):
+                arrangement = "RIGHT";
+
+
+        }
         telemetry.addData("arrangement", blockArrangement);
+        telemetry.addData("position", blockArrangement);
         telemetry.update();
+
 
 
         //#### FORWARD TOWARD BLOCKS ####
@@ -170,7 +184,7 @@ int forward_addition = 0;
         robot.lift.setTargetPosition((int)LiftPosit);
 
         //#### SQUARE UP ####
-        squareUp(-90,.15, 1);
+        squareUp(-87,.15, 1);
 
         sleep(750); //give lift time to come down
 
@@ -181,9 +195,8 @@ int forward_addition = 0;
         squareUp(0,.3, 3);
         squareUp(0,.15, 1);
 
-        //TODO DETERMINE IF NEEDED
         //#### BACK UP INTO WALL ####
-        encoderForward(1900,-.4); //was 900 and halfway
+        encoderForward(1900,-.45); //was 900 and halfway
         robot.stopMotors();
 
         //### FORWARD BEFORE VIDEO DETECT
@@ -238,7 +251,7 @@ int forward_addition = 0;
 
 
         //#### APPROACH BLOCK SLOW ####
-        encoderForward(400,0.2);
+        encoderForward(300,0.2); //400
         robot.motorPowers(0);
 
         //#### IF LEFT, PIVOT TO THE LEFT ####
@@ -276,7 +289,7 @@ int forward_addition = 0;
             encoderForward(3800 + forward_addition, .45);
         }
         else{
-            encoderForward(3900, .45);
+            encoderForward(4100, .55);
         }
         robot.stopMotors();
 
@@ -316,10 +329,9 @@ int forward_addition = 0;
         sleep(750); //give block time to come down
 
         //#### BACK AWAY AFTER DROP INTO THE LINE ####
-        encoderForward(300,-0.40);
+        encoderForward(600,-0.40);
         robot.motorPowers(0);
 
-        end();
 
     }
     private void reportMotors(){

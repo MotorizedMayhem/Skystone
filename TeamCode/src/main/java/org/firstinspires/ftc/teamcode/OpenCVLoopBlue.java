@@ -25,7 +25,7 @@ public class OpenCVLoopBlue extends MM_LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        int threshold = 20;
+        int threshold = 30;
         int leftOff = 385;
         int topOff = 240;
         while (opModeIsActive()) {
